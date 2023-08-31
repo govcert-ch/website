@@ -1,0 +1,141 @@
+---
+title: "TorrentLocker Ransomware targeting Swiss Internet Users"
+author: GovCERT.ch
+draft: false
+dateadded: 2016-01-21 12:13:02
+lastmod: 2016-01-22 09:41:20
+date: 2016-01-21 13:00:00
+aliases: 
+  - 17/torrentlocker-ransomware-targeting-swiss-internet-users
+---
+
+<p>On Wednesday, Jan 20 2016, we have noticed a major spam campaign hitting the Swiss cyberspace, distributing a ransomware called TorrentLocker. We have already warned about similar TorrentLocker attacks against Swiss internet users last year via <a href="https://twitter.com/GovCERT_CH/status/633617072178728960">Twitter</a>.
+TorrentLocker is one of many ransomware families that encrypts any local file on a victim’s computer and demands that the victim pays a ransom to have his files decrypted again. Since some ransomware families do not only encrypt files stored locally on the infected machine but also on any mapped network share, ransomware also represent a serious threat to corporate networks. To make sure that the malicious email goes through spam filters and gets opened by the recipient swiftly, the TorrentLocker gang is using a handful of tricks.</p>
+
+<h2>TorrentLocker spam campaign</h2>
+
+<p>While still most of the daily spam that arrives in the inbox of internet users every day is being emitted by infected computers in the internet (so called botnets), the TorrentLocker gang is using the snowshoe spam tactic to send out their spam mails. This means that they rent smaller networks from hosting providers which will then be used to send out the spam email. Since snowshoe spam is usually being sent from hosting provider IP space (unlike botnet spam, which comes from end-user IP space such as DSL, cable or fiber lines) with a valid (matching) rDNS / EHLO and sometimes even a proper SPF and DKIM record, they easily bypass many spam filters. Another characteristic of a typical TorrentLocker spam email is that they commonly don't contain any attachments (such as the usual executable in a .zip archive) but a link to a compromised website that is hosting the infection binary. By doing so, the spam emails bypass Antivirus filters (since there is simply no attachment in the email that an AV could detect and analyze). Once the recipient of the TorrentLocker spam email clicks on the link in the spam email, it will lead the victim to a compromised website that serves a captcha. Unlike real captchas, the captcha on the TorrentLocker site is hardcoded in the PHP script and is always the same. The reason why the TorrentLocker gang uses such a captcha is unknown, but we assume that they take advantage of such a (rather simple) captcha to avoid that spam filters and similar security devices can pull the malware down and analyze it in an automated way.</p>
+
+<p>To make sure that the victim opens the email and clicks on the link presented in the spam email, the TorrentLocker gang uses some localized themes of the targeted country. In the recent TorrentLocker spam campaigns we have seen against Swiss internet users, the spam emails are written in German and pretend to come from the Swiss Federal Police (Bundesamt für Polizei), telling that there is a court case being opened against the recipient and offering a download-link to see the documentation. Furthermore, the recipient is asked to provide documents to the court.</p>
+
+<center><a href="assets/torrentlocker_spam_20160120.png"><img src="assets/torrentlocker_spam_20160120.png" alt="TorrentLocker spam sample" height="334" width="500"/></a><br /><em>TorrentLocker spam sample (click to enlarge)</em></center>
+
+<p>So we have some sort of a perfect spam email here: Sent from snowshoe IP space with a link to a legit (but compromised) website and themed for the country of the recipient.</p>
+
+<h2>TorrentLocker malware distribution sites</h2>
+
+<p>To distribute TorrentLocker, the miscreants are using a set of compromised websites which are being advertised through the spam emails. So far, we have seen the following websites being abused for this purpose:</p>
+
+<code>http://npoklapan.ru/S1xpNOVfQctL/HgMn9q.php<br />
+http://belprofi.ru/lF6hPWO/Hb59n6.php<br />
+http://vitalitaclub.ru/vOg4juQUbtHF/5V76dyF2.php<br />
+http://portal-chernogoria.ru/6IudB9smWoXD/iWNwT4Ecm.php<br />
+http://ardi-design.ru/ZTzo7F3j/VwzfSU.php<br />
+http://alians-tver.ru/xMZhUSOV8vC1/3gjxdAO.php<br />
+http://tarelkas.ru/cwNfCI/W8OEaS2t6K3gxhjo.php<br />
+http://bikerswelcome.ru/be3XN9TzmF/QpvxmkLrIKWw1dhb.php<br />
+http://ekran-os.ru/IfFGhsqBHoY/cvusUTYaiIzBMSNj.php<br />
+http://chistogorsk.ru/6NvdOfYUP/1HLWzDeORVMB8ca.php<br />
+http://kupalniki-ch.ru/jyxg9K4MZN1q/r8ieGEdqc4.php<br />
+http://pra-med.ru/V5u8hq/bPqwCEIZFLe1SWd.php<br />
+http://soft-consulting.ru/PT6FuE2yKn/qBolKkaeQpuP.php<br />
+http://www.allstroy.su/5hGCOVUImy1/Sm610UBxtAKa8hw.php<br />
+http://myoptovik.ru/bpKXlif/yejER7AYz8.php<br />
+http://truck-servis.ru/ZHnU9/ogVs1nr6PT2qiRc.php</code>
+
+<p>These websites look like this:</p>
+
+<center><a href="assets/torrentlocker_site_20160120.png"><img src="assets/torrentlocker_site_20160120.png" alt="TorrentLocker malware distribution site" height="488" width="500"/></a><br /><em>TorrentLocker malware distribution site (click to enlarge)</em></center>
+
+<p>In fact it is pretty easy to recognize that these websites are malicious: They try to convince the visitor that he is visiting the website of the Swiss Federal Police, but are all hosted in the country Top Level Domain (ccTLD) .ru. Considering that web sites of the Swiss Federal Administration usually end with admin.ch (like www.fedpol.admin.ch in this case, which is the real website of the Swiss Federal Police), seeing the logo of the Swiss Federal Administration on a website that is not ending with admin.ch (or is even hosted in a foreign ccTLD) should raise suspicion.</p>
+
+<h2>TorrentLocker malware</h2>
+
+<p>To bypass Antivirus on the victims computer (or on the web proxy in a corporate environment), the criminals are pushing a new infection binary to the distribution sites frequently. By this they make sure that the current infection binary has a low AV coverage and is able to pass Antivirus software. Below are two samples we managed to pull down from the infection sites.</p>
+
+<code>bundespolizei_info_62788.zip (MD5 0718c8f2108de4147b527f52a4099127)<br />
+bundespolizei_info_62788.exe (MD5 0af13f1ba5afc61d69c8c980dfc4f371)<br />
+bundespolizei_info_62788.zip (MD5 d10706a37257d8c6b031912be96a53e7)<br />
+bundespolizei_info_62788.exe (MD5 5c4fa424f4796bde3209794f9ea01801)<br />
+bundespolizei_info_62788.zip (MD 2455911fc67fd1207cda4bb0c54cf8af)<br />
+bundespolizei_info_62788.exe (MD5 140a16ec36954eaaf298f3a91cac6054)</code>
+
+<p>Once executed on the victim's machine, TorrentLocker will first try to contact a botnet command & control server (C&C) before the malware will start to encrypt files on the local computer. This means that if you block access to the TorrentLocker botnet controller, the ransomware will not encrypt any files.</p>
+
+<p>Below is a list of know TorrentLocker C&Cs (hosted in Russia):</p>
+
+<code>pyjtoxoyr.org<br />
+yoiuytjlkc.net<br />
+mnieopiapr.com<br />
+koeplkeor.net<br />
+opododowep.org<br />
+79.174.65.197<br />
+46.183.165.8<br />
+37.46.128.37</code>
+
+<p>As soon as TorrentLocker started to encrypt files on the victims machine, the malware opens a local web page in the internet explorer, telling the victim that his local files have just been encrypted by "Cryp0tL0cker" and that he has to pay a ransom to get the files decrypted again. Below is a screenshot of this “lockscreen”:</p>
+
+<center><a href="assets/torrentlocker_lockscreen_20160120.png"><img src="assets/torrentlocker_lockscreen_20160120.png" alt="TorrentLocker lockscreen" height="538" width="500"/></a><br /><em>TorrentLocker lockscreen (click to enlarge)</em></center>
+
+<p>The price for such a "decryption key" varies. For Swiss citizens, the price is about CHF 499. The victim will have 5 days time to buy a decryption key until the miscreant will raise the price of such one from CHF 499 to CHF 998. MELANI / GovCERT.ch recommends not to pay.</p>
+
+<p>So far, we have seen the following TorrentLocker payment sites:</p>
+
+<code>http://javajvlsworf3574.ip2tor.be<br />
+http://javajvlsworf3574.torway.ch<br />
+http://javajvlsworf3574.onion.link<br />
+http://javajvlsworf3574.onion</code>
+
+<p>Should all payment sites be unavailable, the miscreants also offer an email address through which the victim can contact them:</p>
+
+<code>decrypthelp@mail333.com</code>
+
+<h2>Looking across the border</h2>
+
+<p>TorrentLocker is known for targeting various other countries. Just like the spam campaign that hit Swiss internet users this week, there have been other well themed spam campaigns hitting other countries. Taking a look at passive DNS data reveals that the following countries have recently been targeted by TorrentLocker as well:</p>
+
+<ul>
+<li>Turkey (TR)</li>
+<li>Norway (NO)</li>
+<li>Australia (AU)</li>
+<li>Italy (IT)</li>
+<li>Germany (DE)</li>
+</ul>
+
+<h2>Conclusion</h2>
+<p>To avoid becoming a victim of TorrentLocker, we provide the following  recommendations :
+For corporations:</p>
+<ul>
+<li>Ensure that you have a daily backup of all your files, including networks shares. Also make sure that the backup is working as expected by doing frequent recovery tests</li>
+<li>At least one backup media should be stored offline without any connection to the network</li>
+<li>Define a backup strategy that ensures that you keep your vital data as long as necessary but at least for several months</li>
+<li>Use Windows's security feature AppLocker to prevent execution of unknown files</li>
+<li>Block traffic from / to known hostile IP addresses and domain names on your web proxy, DNS server and / or firewall</li>
+<li>Inform your users about the dangers of the internet on a regular basis. Teach them that they should never open attachments from unknown senders or click on links in emails without verifying their authenticity</li>
+</ul>
+
+<p>For private persons:</p>
+<ul>
+<li>Ensure that you backup your data frequently, e.g. onto an external drive. Ensure that you detach the drive when you have finished your backup. Otherwise the backup will get encrypted as well once your computer gets infected by a ransomware</li>
+<li>Do not open any email attachments from suspicious senders</li>
+<li>Do not click on any links in emails from suspicious senders</li>
+<li>Double check the address bar when clicking on a link in an email</li>
+</ul>
+
+<p>In general, MELANI / GovCERT.ch recommends not to pay any ransoms. Paying a ransom will finance the operations of cybercriminals. In addition, you do not have any guarantee that you will receive a decryption key to decrypt your files.</p>
+
+<p>A full set of recommendations for corporate networks can be found on the MELANI website.</p>
+
+<p><strong>Merkblatt IT-Sicherheit für KMUs (German):</strong><br />
+<a href="https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-unternehmen/aktuelle-themen/schuetzen-sie-ihr-kmu.html" title="Merkblatt IT-Sicherheit für KMUs">https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-unternehmen/aktuelle-themen/schuetzen-sie-ihr-kmu.html</a></p>
+
+<p><strong>Sécurité informatique: aide-mémoire pour les PME (French):</strong><br />
+<a href="https://www.melani.admin.ch/melani/fr/home/documentation/listes-de-controle-et-instructions/securite-informatique--aide-memoire-pour-les-pme.html" title=">Sécurité informatique: aide-mémoire pour les PME">https://www.melani.admin.ch/melani/fr/home/documentation/listes-de-controle-et-instructions/securite-informatique--aide-memoire-pour-les-pme.html</a></p>
+
+<p><strong>Promemoria sulla sicurezza informatica per le PMI (Italian):</strong><br />
+<a href="https://www.melani.admin.ch/melani/it/home/dokumentation/liste-di-controllo-e-guide/promemoria-sulla-sicurezza-informatica-per-le-pmi.html" title=">Promemoria sulla sicurezza informatica per le PMI">https://www.melani.admin.ch/melani/it/home/dokumentation/liste-di-controllo-e-guide/promemoria-sulla-sicurezza-informatica-per-le-pmi.html</a></p>
+
+<p>The Cybercrime Coordination Unit Switzerland (CYCO) has also published a warning regarding TorrentLocker on their website:</p>
+<p><strong>Warnung: betrügerische Mails mit Verlinkung auf eine gefälschte Webseite von fedpol (German):</strong><br />
+<a href="https://www.cybercrime.admin.ch/kobik/de/home/warnmeldungen/meldungen/2015/2015-07-02.html" title="Warnung: betrügerische Mails mit Verlinkung auf eine gefälschte Webseite von fedpol">https://www.cybercrime.admin.ch/kobik/de/home/warnmeldungen/meldungen/2015/2015-07-02.html</a></p>
+

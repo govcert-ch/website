@@ -1,0 +1,395 @@
+---
+title: "Tofsee Spambot features .ch DGA - Reversal and Countermesaures"
+author: GovCERT.ch
+draft: false
+dateadded: 2016-12-22 08:53:15
+lastmod: 2016-12-22 16:30:55
+date: 2016-12-22 11:30:00
+aliases: 
+  - 26/tofsee-spambot-features-.ch-dga-reversal-and-countermesaures
+---
+
+<p>Today we came across an interesting malware sample that appeared in our malware zoo. The malware, which we identified as Tofsee, has tried to spam out hundreds of emails within a couple of minutes. However, this wasn’t the reason why it popped up on our radar (we analyze thousands of malware samples every single day, many of which are spambots too). The reason why this particular sample caught our attention were the domains queried by the malware. The domains appear to be algorithmically generated, and about half of the domains use the country code top level domain (ccTLD) of Switzerland:</p>
+
+<center><a href="assets/requests_wireshark.png"><img src="assets/requests_wireshark.png" height="220" width="500" alt=">Wireshark screenshot of Tofsee DNS queries"/></a><br /><em>Wireshark screenshot of Tofsee DNS queries (click to enlarge)</em></center>
+
+<p>Domain generation algorithms (DGAs) that use the ccTLD for Switzerland are very rare. Gozi is currently the only malware covered by the DGArchive that uses .ch --- and only in 1 of over 90 different known configurations.</p>
+
+<p>This blog post first describes the analysis of the DGA. We then give a reimplementation of the DGA in Python, as well as a list of the generated domains for the next 52 weeks. We conclude with measure that we took to deal with algorithmically generated .ch domains.</p>
+
+<h2>Analysis</h2>
+
+<p>We analyzed the following Tofsee sample, with a fairly recent compile timestamp of Fri, 16 Dec 2016 07:09:11:</p>
+
+<pre><code>
+md5	490e121113fbadd776ca270c6788c59a
+sha	c294e79a5f0fbbffd535bb517f43bf69e9bbfb03
+sha256	36704ec52701920451437a870e7d538eb409f50a4ae2f8231869500d1d6de159</code></pre>
+
+<h3>Seeding</h3>
+<p>The following graph node show the seeding of the DGA. First, the number of seconds that have elapsed since 1 January 1974 are counted (offset 0x40A0A0). The difference between this date and the unix epoch --- 126230400 seconds --- is added to the result at 0x0040A0A8, effectively yielding the current unix time. It is unclear to us why the authors used this convoluted method to get the current time.
+The unix time then undergoes four integer division by 60,60,24 and 7, to get the number of weeks since epoch. This value is used as the seed for the upcoming domain generation algorithm. Domains are therefore valid for one week, starting on Thursday at midnight UTC.</p>
+
+<center><a href="assets/seeding.png"><img src="assets/seeding.png" alt="Seeding of the DGA"/></a><br /><em>Seeding of the DGA (click to enlarge)</em></center>
+
+<p>Seeding also calls a pseudo random number generator (PRNG) and takes the result modulo 10 to get a value between 0 and 9. The random number generator is the standard linear congruential algorithm used by the Borland C/C++ compiler:</p>
+
+<pre><code>
+unsigned int rand()
+{
+    r2 = 22695477 * r2 + 1;
+    return r2 >> 16;
+}</code></pre>
+<p>The initial value of r2 is virtually unpredictable:</p>
+<pre><code>
+GetSystemTimeAsFileTime(&SystemTimeAsFileTime);
+GetVolumeInformationA(0, 0, 4u, &VolumeSerialNumber, 0, 0, 0, 0);
+r2 = (VolumeSerialNumber \
+      ^ SystemTimeAsFileTime.dwHighDateTime \
+      ^ GetTickCount()) & 0x7FFFFFFF;</code></pre>
+
+
+
+<h3>DGA</h3>
+<p>The generated domains, along with the port 443 and an unknown constant 2, are stored 69 bytes apart in memory (called target in the next graph). In total 10 domains are generated:</p>
+
+<center><a href="assets/dga_loop.png"><img src="assets/dga_loop.png" height="924" width="480" alt="Loop that generates 10 domains"/></a><br /><em>Loop that generates 10 domains (click to enlarge)</em></center>
+
+<p>At offset 0x040A0FC a random string is generated based on the seed, i.e., number of weeks. We will come back to this routine later. The random string is repeated once at 0x040A114; so that, for example, drs becomes drsdrs.<br />
+A random letter between "a" and "j" is then appended to the string to complete the second level domain. The picked letter is based on the unpredictable PRNG shown in the seeding section above for the first generated sld. After that, the DGA picks the remaining letters in order (offsets 0x0040A16D to 0040A175). For example, if in the first iteration the letter "c" is appended, then the following iterations append "d","e","f","g","h","j","a" and finally "b".<br />
+The top level domain is set to .ch for the first five domains, and to .biz for the remaining five domains. For any given run of the malware this will result in exactly one tld per generated second level domain per run of the malware, although a second level domain will be paired with both top level domains through additional runs of the malware.<br/>
+Finally, let's come back to the random string generation routine called at 0x040A0FC:</p>
+
+<center><a href="assets/dga.png"><img src="assets/dga.png" height="1057" width="480" alt="Disassembly of the sld generation"/></a><br /><em>Disassembly of the sld generation (click to enlarge)</em></center>
+
+<p>This routine uses the seed r, i.e., the number of weeks since January 1st, 1970, to generate a random string as follows:</p>
+
+<pre><code>
+string = ""
+DO
+    string += r % 26 + 'a'
+    r = r / 26            // integer division
+WHILE r
+string = reverse(string)</code></pre>
+
+<p>For example, as of December 20, 2016, the number of week since epoch is 2450. Dividing by 26 results in 94 with a remainder of 6, so the first letter is g. Dividing 94 by 26 results in 3 with remainder 16, so the second letter is q. Dividing 3 by 26 results in 0, so we append letter d and exit the loop. The random string gqd is reversed resulting in dqg.</p>
+
+<h3>Reimplementation</h3>
+<p>The following reimplementation of the DGA in Python prints all 20 potential domains for any given date. Please note that each actual run of the malware will only generate and test one domain per second level domain.</p>
+
+<pre><code>
+from datetime import datetime
+import time
+import argparse
+
+def dga(r):
+    domain = ""
+    while True:
+        domain += chr(r % 26 + ord('a'))
+        r //= 26
+        if not r:
+            break
+    for i in range(10):
+        for tld in ['.biz', '.ch']:
+            yield 2*domain[::-1] + chr(i + ord('a')) + tld
+
+def printdomains(date):
+    unixtimestamp = time.mktime(date.timetuple())
+    seed = int(unixtimestamp // 60 // 60 // 24 // 7)
+
+    for domain in dga(seed):
+        print(domain)
+
+
+if __name__=="__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--date", help="date for which to generate domains")
+    args = parser.parse_args()
+    if args.date:
+        d = datetime.strptime(args.date, "%Y-%m-%d")
+    else:
+        d = datetime.now()
+    printdomains(d)</code></pre>
+
+<h3>List of Domains</h3>
+<p>The following table lists all generated domains of the next 52 weeks. The domains are given as brace expansions, so dqgdqg{a..j}.{ch,biz} stands for 20 different domains. All times are given in CET.</p>
+
+<table>
+<thead>
+<tr class="header">
+<th align="left">start</th>
+<th align="left">end</th>
+<th align="left">domains</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2016-12-15 01:00:00</td>
+<td align="left">2016-12-22 00:59:59</td>
+<td align="left">dqgdqg{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2016-12-22 01:00:00</td>
+<td align="left">2016-12-29 00:59:59</td>
+<td align="left">dqhdqh{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2016-12-29 01:00:00</td>
+<td align="left">2017-01-05 00:59:59</td>
+<td align="left">dqidqi{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-01-05 01:00:00</td>
+<td align="left">2017-01-12 00:59:59</td>
+<td align="left">dqjdqj{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-01-12 01:00:00</td>
+<td align="left">2017-01-19 00:59:59</td>
+<td align="left">dqkdqk{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-01-19 01:00:00</td>
+<td align="left">2017-01-26 00:59:59</td>
+<td align="left">dqldql{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-01-26 01:00:00</td>
+<td align="left">2017-02-02 00:59:59</td>
+<td align="left">dqmdqm{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-02-02 01:00:00</td>
+<td align="left">2017-02-09 00:59:59</td>
+<td align="left">dqndqn{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-02-09 01:00:00</td>
+<td align="left">2017-02-16 00:59:59</td>
+<td align="left">dqodqo{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-02-16 01:00:00</td>
+<td align="left">2017-02-23 00:59:59</td>
+<td align="left">dqpdqp{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-02-23 01:00:00</td>
+<td align="left">2017-03-02 00:59:59</td>
+<td align="left">dqqdqq{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-03-02 01:00:00</td>
+<td align="left">2017-03-09 00:59:59</td>
+<td align="left">dqrdqr{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-03-09 01:00:00</td>
+<td align="left">2017-03-16 00:59:59</td>
+<td align="left">dqsdqs{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-03-16 01:00:00</td>
+<td align="left">2017-03-23 00:59:59</td>
+<td align="left">dqtdqt{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-03-23 01:00:00</td>
+<td align="left">2017-03-30 01:59:59</td>
+<td align="left">dqudqu{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-03-30 02:00:00</td>
+<td align="left">2017-04-06 01:59:59</td>
+<td align="left">dqvdqv{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-04-06 02:00:00</td>
+<td align="left">2017-04-13 01:59:59</td>
+<td align="left">dqwdqw{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-04-13 02:00:00</td>
+<td align="left">2017-04-20 01:59:59</td>
+<td align="left">dqxdqx{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-04-20 02:00:00</td>
+<td align="left">2017-04-27 01:59:59</td>
+<td align="left">dqydqy{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-04-27 02:00:00</td>
+<td align="left">2017-05-04 01:59:59</td>
+<td align="left">dqzdqz{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-05-04 02:00:00</td>
+<td align="left">2017-05-11 01:59:59</td>
+<td align="left">dradra{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-05-11 02:00:00</td>
+<td align="left">2017-05-18 01:59:59</td>
+<td align="left">drbdrb{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-05-18 02:00:00</td>
+<td align="left">2017-05-25 01:59:59</td>
+<td align="left">drcdrc{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-05-25 02:00:00</td>
+<td align="left">2017-06-01 01:59:59</td>
+<td align="left">drddrd{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-06-01 02:00:00</td>
+<td align="left">2017-06-08 01:59:59</td>
+<td align="left">dredre{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-06-08 02:00:00</td>
+<td align="left">2017-06-15 01:59:59</td>
+<td align="left">drfdrf{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-06-15 02:00:00</td>
+<td align="left">2017-06-22 01:59:59</td>
+<td align="left">drgdrg{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-06-22 02:00:00</td>
+<td align="left">2017-06-29 01:59:59</td>
+<td align="left">drhdrh{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-06-29 02:00:00</td>
+<td align="left">2017-07-06 01:59:59</td>
+<td align="left">dridri{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-07-06 02:00:00</td>
+<td align="left">2017-07-13 01:59:59</td>
+<td align="left">drjdrj{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-07-13 02:00:00</td>
+<td align="left">2017-07-20 01:59:59</td>
+<td align="left">drkdrk{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-07-20 02:00:00</td>
+<td align="left">2017-07-27 01:59:59</td>
+<td align="left">drldrl{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-07-27 02:00:00</td>
+<td align="left">2017-08-03 01:59:59</td>
+<td align="left">drmdrm{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-08-03 02:00:00</td>
+<td align="left">2017-08-10 01:59:59</td>
+<td align="left">drndrn{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-08-10 02:00:00</td>
+<td align="left">2017-08-17 01:59:59</td>
+<td align="left">drodro{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-08-17 02:00:00</td>
+<td align="left">2017-08-24 01:59:59</td>
+<td align="left">drpdrp{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-08-24 02:00:00</td>
+<td align="left">2017-08-31 01:59:59</td>
+<td align="left">drqdrq{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-08-31 02:00:00</td>
+<td align="left">2017-09-07 01:59:59</td>
+<td align="left">drrdrr{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-09-07 02:00:00</td>
+<td align="left">2017-09-14 01:59:59</td>
+<td align="left">drsdrs{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-09-14 02:00:00</td>
+<td align="left">2017-09-21 01:59:59</td>
+<td align="left">drtdrt{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-09-21 02:00:00</td>
+<td align="left">2017-09-28 01:59:59</td>
+<td align="left">drudru{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-09-28 02:00:00</td>
+<td align="left">2017-10-05 01:59:59</td>
+<td align="left">drvdrv{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-10-05 02:00:00</td>
+<td align="left">2017-10-12 01:59:59</td>
+<td align="left">drwdrw{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-10-12 02:00:00</td>
+<td align="left">2017-10-19 01:59:59</td>
+<td align="left">drxdrx{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-10-19 02:00:00</td>
+<td align="left">2017-10-26 01:59:59</td>
+<td align="left">drydry{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-10-26 02:00:00</td>
+<td align="left">2017-11-02 00:59:59</td>
+<td align="left">drzdrz{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-11-02 01:00:00</td>
+<td align="left">2017-11-09 00:59:59</td>
+<td align="left">dsadsa{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-11-09 01:00:00</td>
+<td align="left">2017-11-16 00:59:59</td>
+<td align="left">dsbdsb{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-11-16 01:00:00</td>
+<td align="left">2017-11-23 00:59:59</td>
+<td align="left">dscdsc{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-11-23 01:00:00</td>
+<td align="left">2017-11-30 00:59:59</td>
+<td align="left">dsddsd{a..j}.{ch,biz}</td>
+</tr>
+<tr class="odd">
+<td align="left">2017-11-30 01:00:00</td>
+<td align="left">2017-12-07 00:59:59</td>
+<td align="left">dsedse{a..j}.{ch,biz}</td>
+</tr>
+<tr class="even">
+<td align="left">2017-12-07 01:00:00</td>
+<td align="left">2017-12-14 00:59:59</td>
+<td align="left">dsfdsf{a..j}.{ch,biz}</td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>Actions taken</h3>
+<p>To prevent that the Tofsee botnet operators are able to abuse the Swiss domain name space (ccTLD .ch) for hosting their botnet Command&Control infrastructure (C&C), we have discussed further actions with the registry of ccTLD .ch (SWITCH). Together with SWITCH and the Registrar of Last Resort (<a href="http://www.rolr.eu/" title="Registrar of Last Resort">RoLR</a>), all possible DGA domain name combinations have been set to non registrable at the registry level. It is therefore not possible to register any of the DGA domain names for the next 12 months.</p>
+
+
+
+

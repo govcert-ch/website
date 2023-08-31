@@ -1,0 +1,29 @@
+---
+title: "Increase in DDoS extortion (DD4BC)"
+author: GovCERT.ch
+draft: false
+dateadded: 2015-05-08 09:18:53
+lastmod: 2015-05-08 11:05:59
+date: 2015-05-08 11:00:00
+aliases: 
+  - 6/increase-in-ddos-extortion-dd4bc
+---
+
+<p>In the past days MELANI / GovCERT.ch has received several requests regarding a Distributed Denial of Service (DDoS) extortion campaign related to 'DD4BC'. The <em>DD4BC Team</em> (that is how the attackers call themselves) started its DDoS extortion campaigns in <a href="https://nakedsecurity.sophos.com/2014/11/05/100-bitcoin-bounty-slapped-onto-head-of-blackmailer-who-ddosed-bitalo/" title="Naked Security: 100 Bitcoin bounty slapped onto head of blackmailer who DDoSed Bitalo">2014</a>. While these attacks have targeted foreign organisations in the past months, we have seen an increase of activity of DD4BC in Europe recently. Since earlier this week, the DD4BC Team expanded their operation to Switzerland. MELANI / GovCERT.ch is aware of several high profile targets in Switzerland that have recently received a blackmail from DD4BC and have consequently suffered from DDoS attacks, obviously conducted by DD4BC.</p>
+
+<p>The DDoS attacks usually start with NTP (port 123 UDP) and SSDP (port 1900 UDP) amplification attacks targeting the victims public website, taking advantage of millions of insecure or misconfigured devices around the world. Later on, we have seen the attackers moving to TCP SYN flooding and layer 7 attacks to bypass mitigation measures taken by the ISP. Taking advantage of amplification attacks by abusing the NTP, SSDP or DNS protocol, the attackers are in theory able to launch DDoS attacks consuming a bandwidth of up to 500 Gbit/s (which is about 1'000 times more than a usually DSL / cable line is able to handle). However, so far we have observed DDoS attacks conducted by DD4BC to be only about 4 - 30 Gbit/s.</p>
+
+<center><a href="assets/ssdp_europe_20150508.jpg"><img src="assets/ssdp_europe_20150508.jpg" height="330" width="540" alt="Insecure / misconfiguration devices running SSDP"/></a>
+<br /><em>Insecure / misconfigured devices running SSDP - Source: <a href="https://ssdpscan.shadowserver.org/">The Shadowserver Foundation</a> (click to enlarge)</em></center>
+
+<p>Rather than give in and pay DD4BC a certain amount of <a href="http://en.wikipedia.org/wiki/Bitcoin" title="Wikipedia: Bitcoin">Bitcoins</a>, we recommend victims to talk to their Internet Services Provider (ISP) to discuss mitigation techniques, such as IP based rate limiting or (temporary) Geo IP address filter. In addition, we recommend to file a criminal complaint at your local police.</p>
+
+<p>Possible mitigation techniques (these have to be discussed with your ISP or upstream provider):</p>
+<ul>
+<li>If you are only doing business in Switzerland, you might want to consider to implement a (temporary) Geo IP filter in order to only allow access attempts from Swiss IP space</li>
+<li>To mitigate TCP SYN floods and layer 7 based attacks (e.g. HTTP flood), you may want to implement rate limiting based on the source IP address</li>
+<li>Most websites are hosted on servers that are only running a webservice. Hence there is no reason to allow any UDP traffic towards your webserver. You may want to consider dropping any UDP traffic towards your webserver at your or your ISPs network edge</li>
+<li>If you are hosting critical infrastructure on the same network than your website, you should consider to move your website to a different network or an anti DDoS provider</li>
+</ul>
+
+<p>MELANI / GovCERT.ch is currently preparing a more detailed guideline with regards to how to deal with DDoS attacks and while release it soon.</p>

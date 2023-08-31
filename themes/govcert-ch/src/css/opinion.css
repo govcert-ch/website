@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap');
+div.blogpost {
+  font-family: 'Lora', serif;
+  color: #131313;
+}
+p {
+  font-size: 1.4rem;
+}
+li {
+  font-size: 1.4rem;
+}
+
+h2 {
+  font-weight: 700;
+}
+
+@media (min-width: 768px) {
+  div.blogpost {
+    padding-left: 6rem;
+    padding-right: 6rem;
+  }
+}
+.opinion__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  margin-bottom: 1em;
+  font-size: 1em;
+  letter-spacing: 0.1em;
+}
+.opinion__header-label {
+  display: block;
+  color: #dc0018;
+  text-transform: uppercase;
+  margin-bottom: -0.1em;
+}
+
+.opinion__header-author {
+  display: block;
+  padding-bottom: 1em;
+  border-bottom: 1px solid #cccccc;
+}
+
+.opinion__sub {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.opinion__sub-date {
+  display: block;
+  text-transform: uppercase;
+  font-size: 1.2em;
+  margin-bottom: 2em;
+}
+
+h1 {
+  text-align: center;
+  font-size: 3em;
+  font-weight: 500;
+}

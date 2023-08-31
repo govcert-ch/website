@@ -1,0 +1,11 @@
+name: Govcert Ch
+license: MIT
+licenselink: 'https://10.0.10.125/govcert/govcert-website/blob/master/LICENSE' 
+description: 'Hugo theme of GovCERT.ch based on the swiss-styleguide'
+homepage: 'https://www.govcert.ch/'
+tags: []
+features: []
+min_version: '0.61'
+author:
+  name: 'GovCERT.ch'
+  homepage: 'https://www.govcert.ch'

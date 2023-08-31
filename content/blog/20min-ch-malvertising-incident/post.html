@@ -1,0 +1,91 @@
+---
+title: "20min.ch Malvertising Incident"
+author: GovCERT.ch
+draft: false
+dateadded: 2016-04-08 08:33:07
+lastmod: 2016-04-08 10:16:42
+date: 2016-04-08 09:38:00
+aliases: 
+  - 21/20min.ch-malvertising-incident
+---
+
+<p>With this blog post we would like to share Indicators Of Compromise (IOCs) related to the attacks against 20min.ch, a popular newspaper website in Switzerland which got compromised and abused by hackers to infect visitors with an ebanking Trojan called Gozi ISFB. The IOCs shared in this blogpost may be used to spot infections within corporate networks.</p>
+
+<p>The compromise of 20min.ch is just one part of a bigger malvertising campaign that is targeting Swiss internet users since at least spring 2015, The goal of the campaign is to infect Swiss citizens with Gozi ISFB and committing ebanking fraud (see <a href="http://www.govcert.admin.ch/blog/13/swiss-advertising-network-compromised-and-distributing-a-trojan" title="Swiss Advertising network compromised and distributing a Trojan">
+Swiss Advertising network compromised and distributing a Trojan</a> and <a href="http://www.govcert.admin.ch/blog/18/gozi-isfb-when-a-bug-really-is-a-feature" title="Gozi ISFB - When A Bug Really Is A Feature">Gozi ISFB - When A Bug Really Is A Feature</a>). MELANI / GovCERT.ch is aware of thousands of computers that got infected by Gozi ISFB in the past months and subsequently were used to access ebanking accounts without the victim’s consent.</p>
+
+<p>We are aware that this Gozi campaign is not only targeting Swiss citizens, but also corporate bank accounts of small- and medium businesses in Switzerland. We therefore recommend SMBs in Switzerland to review their IT-Security arrangements accordingly (see our recommendations at the end of the blog post).</p>
+
+<p>Below is a list of IOCs associated with this Gozi ISFB campaign.</p>
+
+<code>
+Exploit Kit infrastructure (used to distribute Gozi ISFB):<br />
+45.63.14.98<br />
+148.251.167.198<br />
+ytjrjthgfjhgfhg.co.vu<br />
+ads.newscee.com<br />
+<br />
+Gozi C&C DGA domains:<br />
+cwwwsitemapwwwwww.su<br />
+sitsitemapnot.su<br />
+disasitemapwwwyandexbot.su<br />
+ccomsitemapagcom.su<br />
+csitbrowsewwwwwwwww.su<br />
+loginhelpsucesssitemap.su<br />
+comwwwcomcomsitsitwcwcom.su<br />
+cloginhelpsucess.su<br />
+<br />
+Gozi C&C IP address:<br />
+151.80.171.200<br />
+<br />
+Gozi bootstrap server:<br />
+141.255.165.122<br />
+<br />
+Malware sample:<br />
+MD5 d4528a53acc47d8ed14b11a2484b83ea<br />
+SHA256 582004916eaa13ac0b8bf717840b696b6d71644264bd95613c6c8bf26c49f657<br />
+</code>
+
+<p>The infection chain is as follows:
+<ol>
+<li>The swf file on 20min.ch contains an embedded Javascript which does a basic fingerprint using User Agent and Cookie. Based on this information a decision is made whether to redirect to the infection site or not.</li>
+<li>Redirect to the exploit Kit where a VB Script is downloaded with another check which exploit would suit the target</li>
+<li>Infect the device with Gozi in the form of a .dll that is made persistent via registry key (rundll) under HKEY\CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run. The dll resides in the %APPDATA% folder of the user.</li>
+</ol>
+
+<p>We are notifying Internet Service Providers (ISPs) and network owners in Switzerland about Gozi infections in their IP space that we become aware of. If you get informed by your ISP about such an infection, we highly recommend you to clean up the infected machine by reinstalling the operating system. Please consider that not all Antivirus software is able to spot a Gozi infection. Hence a full reinstall of the operating system is recommended.</p>
+
+<h2>Recommendations</h2>
+<p>You can find further documentation how to prevent getting infected by malware below.</p>
+
+<p>For end users:</p>
+
+<p><strong>Informationen für Private</strong><br />
+<a href="https://www.ncsc.admin.ch/ncsc/de/home/infos-fuer/infos-private.html" title="MELANI Verhaltensregeln">https://www.ncsc.admin.ch/ncsc/de/home/infos-fuer/infos-private.html</a></p>
+
+<p><strong>Informations pour des utilisateurs privés</strong><br />
+<a href="https://www.melani.admin.ch/melani/fr/home/schuetzen/verhaltensregeln.html" title="MELANI Règles de comportement">https://www.melani.admin.ch/melani/fr/home/schuetzen/verhaltensregeln.html</a></p>
+
+<p><strong>Informazioni per privati</strong><br />
+<a href="https://www.melani.admin.ch/melani/it/home/schuetzen/verhaltensregeln.html" title="MELANI Regole di comportamento">https://www.melani.admin.ch/melani/it/home/schuetzen/verhaltensregeln.html</a></p>
+
+<br />
+<p>For small and medium businesses:</p>
+
+<p><strong>Merkblatt IT-Sicherheit für KMUs</strong><br />
+<a href="https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-unternehmen/aktuelle-themen/schuetzen-sie-ihr-kmu.html" title="Merkblatt IT-Sicherheit für KMUs">https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-unternehmen/aktuelle-themen/schuetzen-sie-ihr-kmu.html</a></p>
+
+<p><strong>Sécurité informatique: aide-mémoire pour les PME</strong><br />
+<a href="https://www.melani.admin.ch/melani/fr/home/documentation/listes-de-controle-et-instructions/securite-informatique--aide-memoire-pour-les-pme.html" title="Sécurité informatique: aide-mémoire pour les PME">https://www.melani.admin.ch/melani/fr/home/documentation/listes-de-controle-et-instructions/securite-informatique--aide-memoire-pour-les-pme.html</a></p>
+
+<p><strong>Promemoria sulla sicurezza informatica per le PMI</strong><br />
+<a href="https://www.melani.admin.ch/melani/it/home/dokumentation/liste-di-controllo-e-guide/promemoria-sulla-sicurezza-informatica-per-le-pmi.html" title="Promemoria sulla sicurezza informatica per le PMI">https://www.melani.admin.ch/melani/it/home/dokumentation/liste-di-controllo-e-guide/promemoria-sulla-sicurezza-informatica-per-le-pmi.html</a></p>
+
+<br />
+<p>Further reading on this Gozi campaign:</p>
+
+<p><strong>Swiss Advertising network compromised and distributing a Trojan</strong><br />
+<a href="http://www.govcert.admin.ch/blog/13/swiss-advertising-network-compromised-and-distributing-a-trojan" title="Swiss Advertising network compromised and distributing a Trojan">http://www.govcert.admin.ch/blog/13/swiss-advertising-network-compromised-and-distributing-a-trojan</a></p>
+
+<p><strong>Gozi ISFB - When A Bug Really Is A Feature</strong><br />
+<a href="http://www.govcert.admin.ch/blog/18/gozi-isfb-when-a-bug-really-is-a-feature" title="Gozi ISFB - When A Bug Really Is A Feature">http://www.govcert.admin.ch/blog/18/gozi-isfb-when-a-bug-really-is-a-feature</a></p>

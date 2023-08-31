@@ -1,0 +1,52 @@
+---
+title: "Analysing a new eBanking Trojan called Fobber"
+author: GovCERT.ch
+draft: false
+dateadded: 2015-09-11 07:43:44
+lastmod: 2015-11-26 09:07:30
+date: 2015-09-11 08:00:00
+aliases: 
+  - 12/analysing-a-new-ebanking-trojan-called-fobber
+---
+
+<p>Some weeks ago we read an interesting blog by <a href="https://blog.malwarebytes.org/intelligence/2015/06/elusive-hanjuan-ek-caught-in-new-malvertising-campaign/">Malwarebytes</a> about Fobber, a new e-banking focussed malware in the arena that seems to be a Tinba spinoff. We decided to have a closer look at it to find out whether Swiss critical infrastructures are targeted by it. We'd like  to share our findings with you, because it contains some interesting advanced techniques that at the same time are implemented in a comparably simple way; we think this makes Fobber an ideal case study.</p>
+
+<p>From a technical point of view, one of the more interesting features we'll look at in the paper is the technique used even after the initial unpacking stage. Around 70 functions are protected by this mechanism that keeps the content in encrypted form until it's actually called - with a granularity level of the function itself. It won't be decrypted before it's actually called, and as soon as the function returns, the code will be re-encrypted using a new, random key. Decryption and re-encryption are crafted in a transparent way that makes it simple to add it to already compiled code; the only precaution to be made in the original code is to leave some unused bytes at the start and a few bytes at the end. The re-encryption function even implements an emulation of a correct return instruction for the stdcall calling convention:</p>
+
+<center><a href="images/blogpost/fobber_ida.png"><img src="assets/fobber_ida.png" height="456" width="520" alt="Fobber Analysis"/></a>
+<br /><em>Fobber Analysis(click to enlarge)</em></center>
+
+
+<p>This mechanism ensures that the code is never visible in decrypted form as a whole at any given point in time. This makes most automated analysis method using memory snapshots ineffective and also ensures that the full memory content does not "look like" code if  statistical heuristics for code detection are applied. Special data concerning the decryption are stored in a per-function header that also supplies a mutex protection to avoid parallel decryptions of the same function by different threads, as well as a a counter to keep track of the recursion level (so it is not decrypted twice when a function calls itself recursively). Said all that, the encryption algorithm itself is rather simple - not much more than a cyclic XOR that preserves the original function length; this makes it interesting as a scholarly example for demonstrating such a technique in action.</p>
+
+<p>Another interesting, though not highly sophisticated feature is the fact that the code is completely position independent and does not require import tables or any additional data segment; in other words, it is fully self-contained - a typical feature of shellcode. It uses a special register (EBX) as a "global frame pointer" to keep an anchor to its own position in the address space. Additionally, when constant data (like strings)  needs to be pushed on the stack as an argument for a function, a "fake" call to the next code interweaved with data in between is used. This is actually the same as pushing a pointer to the data onto the stack followed by a jmp. Such the code is position independent and additionally confuses disassemblers like IDA Pro quite effectively because such a call instruction has nothing to do with a function call. In the case of strings, this is most times combined with a string decryption function - once more, the strings will never all be visible in memory simultaneously.</p>
+
+<p>For imports, fobber scans through loaded modules, finds function by calculating hash values over function names. From this, it builds its own IAT structure, which is different from a normal IAT structure known from the PE format.</p>
+
+<p>The paper will also have a look at the encryption of the configuration file (embedded in the binary, or updated by a C2) and the domain name algorithm. Here some MD5s of fobber samples we examined - they all seem to be from the same campaign (we don't know if there even is more than one campaign) as they share the encryption key:</p>
+
+<code>
+09d3e3f36f1e3856bcbd0c7f9bfb39fb<br />
+1bf6c466a6ac06c41210a76cc0d4e253<br />
+2f8fab3d0710f1bb0f7198c543dd0f72<br />
+45446231addbaf0ea542b64c462d7c2c<br />
+4f68362896e34d8777a96dd8990a3609<br />
+6072a433ac0836eb91254541f3474405<br />
+64d89db0c17970510864bbdbc94b7fdd<br />
+691ce6807925fed03cb61f4add0e5ffd<br />
+7706b210bf33682065c35ed667acba17<br />
+7ffa59d686b719711a3e5025adb3128f<br />
+9bc5cb7268012c9786e2e107b64a1adb<br />
+a6471d1cc581d20eea3f580ad445d4c4<br />
+ae970c5dab644373d53d51a3f97b1aa1<br />
+e42944ea45489f31552c807dbe62e879<br />
+f088a4e21decd52af53b8ba313ab2eec<br />
+f78245a07c00e4c7a30b7f6df31f6534</code>
+
+<p>So far, we are not aware of any financial institutions in Switzerland being targeted by Fobber. However, we will continue to monitor this threat and will update our blog post if anything changes.</p>
+
+<p>The whitepaper with our full Fobber analysis can be found in the whitepaper section:</p>
+<ul>
+<li><a href="http://www.govcert.admin.ch/papers/1/fobber-analysis" title="Fobber Analysis">Fobber Analysis</a></li>
+</ul>
+

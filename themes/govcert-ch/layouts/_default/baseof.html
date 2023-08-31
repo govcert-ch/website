@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  {{- partial "metadata.html" . }}
+  <link rel="stylesheet" href="/assets/css/main.css">
+  {{ if .Params.opinion}}
+    <link rel="stylesheet" href="/assets/css/opinion.css">
+  {{end}}
+</head>
+
+<body>
+  <div class="mod mod-homepage">
+  {{- partial "accesskeys" . -}}
+  </div>
+  <div class="container container-main">
+
+    <header>
+      {{- partial "header" -}}
+    </header>
+    {{- partial "navigation" . -}}
+    {{- partial "breadcrumbs" (dict "permalink" .Permalink "title" .Title)}}
+    <div class="container-fluid">
+    {{ block "main" . }}{{- end }}
+    </div>
+    {{- partial "footer" -}}
+  </div>
+  <script src="/assets/js/jquery.min.js"></script>
+  <script src="/assets/js/jquery.drilldown.min.js"></script>
+  <script src="/assets/js/bootstrap.min.js"></script>
+  <script src="/assets/js/styleguide.js"></script>
+  {{- block "scripts" . }}{{- end -}}
+</html>

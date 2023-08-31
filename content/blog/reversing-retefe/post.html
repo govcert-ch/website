@@ -1,0 +1,211 @@
+---
+title: "Reversing Retefe"
+author: GovCERT.ch
+draft: false
+dateadded: 2018-10-30 09:11:25
+lastmod: NULL
+date: 2018-11-08 09:20:00
+aliases: 
+  - 35/reversing-retefe
+---
+
+
+<h2>Introduction</h2>
+<p>
+Approximately one year ago, we have published our blog post <a href="https://www.govcert.ch/blog/33/the-retefe-saga">The Retefe Saga</a>. Not much has changed since last year except that we have seen a rise of malspam runs in the last couple of weeks and we want to use the opportunity to show how to reverse engineer the Retefe malware.
+</p>
+
+<p>
+Let's start with a graph of the Retefe malspam runs, we have seen the past 3 years. Apart from a few weeks, Retefe has been hitting Switzerland with malspam waves several times a week. On the right hand side of the diagram, you can see the companies from which the attackers have impersonated the brands to lure innocent users into opening the documents attached or clicking on links. 
+</p>
+
+<br />
+<center>
+<img src="assets/retefe_timeline.png" alt="Retefe Timeline"><br />
+<em>Retefe Timeline</em>
+</center>
+<br />
+<p>
+But Retefe is not only targeting eBanking customers in Switzerland but also in Liechtenstein, Austria and Norway, using localized malspam themes to motivate recipients of such malspam emails to open the attachment and infect themselves with Retefe.
+</p>
+<h3>Modus Operandi</h3>
+<p>
+Let’s explain briefly the modus operandi and the infrastructure elements of Retefe after the client infection:
+</p>
+
+<ol type="1">
+  <li>If the victim wants to connect to a eBanking website, the client is redirected through TOR to the fraudster eBanking portal.</li>
+  <li>After the victim has entered the eBanking credentials, the website displays a download link to an Android app (if necessary for the login) for the second factor which will be used to complete the login sequence.</li>
+  <li>The fraudster grabs the entered credentials.</li>
+  <li>The fraudster uses the entered credentials to set up a session to the victims bank and issues a payment to a specific account</li>
+</ol> 
+<br />
+<center>
+<img src="assets/retefe_modus_operandi.png" alt="Retefe Modus Operandi"><br />
+<em>Modus Operandi</em>
+</center>
+
+
+<h2>Reversing the Binary</h2>
+
+<p>
+Retefe is usually delivered by a malicious Microsoft Word document with Macros, which downloads and executes an x64 binary. In this blog post we focus on the downloaded executable.
+</p>
+
+<p>
+We will analyze a Retefe sample with the following SHA-1 hash:<br />
+<code>184ec697c4151e8d90734e3d9a639b4c8d134825</code><br />
+This binary is also clearly marked as Retefe on VirusTotal:<br />
+<a href="https://www.virustotal.com/#/file/75ab90e69e26d41bb74e11431b165f572a3fb1139637884da72bec0d3a1e121b/detection">VirusTotal Link</a>
+</p>
+
+<h3>IDA</h3>
+<p>
+Let's start directly in IDA Pro, which initially shows the entry point of the malware sample:
+</p>
+
+<br />
+<center>
+<img src="assets/entrypoint.png" alt="Entry Point"><br />
+<em>Entry Point</em>
+</center>
+<br /><br />
+
+<p>
+As we walk through the first part of the assembly code, we see a call to a function named <code>sub_7FF7313713A0</code> (highlighted in the screenshot above). Double-clicking on this function brings us to the next screenshot which is already the most important part of this binary.
+</p>
+
+<br />
+<center>
+<img src="assets/xor.png" alt="XOR"><br />
+<em>XOR</em>
+</center>
+<br /><br />
+
+<p>
+An XOR operation on a memory location inside a loop is often indicative of interesting data being decrypted. This is why we set a breakpoint <code>F2</code> at this exact position in IDA. So let's give it a try and start the debugger with <code>F9</code>. The debugger will stop as expected at the breakpoint. Next we earmark the memory location which is deciphered in the loop: we jump to <code>RBX</code> (this can be different in your case) using the registers window and we add a marker <code>ALT + m</code> in the IDA disassembly window.
+</p>
+
+<br />
+<center>
+<img src="assets/registers.png" alt="Registers"><br />
+<em>Registers</em>
+</center>
+<br /><br />
+<center>
+<img src="assets/mark_position.png" alt="Mark Position"><br />
+<em>Mark Position</em>
+</center>
+<br /><br />
+<center>
+<img src="assets/mark_position_name.png" alt="Enter mark description"><br />
+<em>Enter mark description</em>
+</center>
+<br /><br />
+
+<p>
+We have named the marker <code>script</code>, because we would like to know what will be at this exact position after the XOR decryption routine. Now we can go back to the graph view <code>ESC</code>, remove the breakpoint <code>F2</code>, place the cursor after the decryption routine <code>loc_7FF731371413</code> and press <code>F4</code> (Run to cursor).
+</p>
+
+<br />
+<center>
+<img src="assets/remove_breakpoint.png" alt="Remove Breakpoint"><br />
+<em>Remove XOR Breakpoint</em>
+</center>
+<br /><br />
+
+<p>
+We can now assume that the XOR encrypted code is decrypted and located at the position we have marked before. The easiest way to check this assumption is to jump to the marked position, which we called <em>script</em>. Just press <code>CTRL + m</code> and select <em>script</em>. This will lead us directly to the decrypted code, after we converted it to an ASCII string (press <code>a</code>):
+</p>
+
+<br />
+<center>
+<img src="assets/javascript.png" alt="JavaScript Code"><br />
+<em>JavaScript Code</em>
+</center>
+<br /><br />
+
+<p>
+This looks very promising and seems to be JavaScript code. We could now select the whole script and remove the obsolete characters or we can use a small Python script to extract all characters of the JavaScript:
+</p>
+
+<h3>export.py</h3>
+<pre><code>
+ea = ScreenEA()
+file_ = AskFile(1, "*.*", 'output file')
+thestring = ""
+while True:
+    b = Byte(ea)
+    if not b:
+        break
+    else:
+        thestring += chr(b)
+    ea += 1
+
+with open(file_, 'wb') as w:
+    w.write(thestring)
+</code></pre>
+
+<p>
+To use the above script, we press <code>ALT + F7</code> and select the before created script <code>export.py</code>.
+</p>
+
+<p>
+This concludes the work done in IDA Pro. After deciphering the JavaScript, the executable will run the code with a built in JavaScript scripting engine and terminate. In the next section we analyze the JavaScript.
+</p>
+
+<h2>Debugging JavaScript</h2>
+
+<p>
+There are many tools for debugging JavaScript, most notably web browsers. For Retefe we are going to use <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Rhino/Download_Rhino">rhino</a> as a script interpreter.<br />
+Before we start the script with <em>rhino</em> we will have a look at the JavaScript. A quick glance shows us a function called <code>eval</code>, which is always suspicious and usually means, that the code is obfuscated. Retefe uses <a href="https://github.com/mdp/gibberish-aes/blob/master/src/gibberish-aes.js">AES encryption</a> to hide its code from signature based detection and simple analysis.
+</p>
+
+<p>
+Cracking the obfuscation is trivial though: We can replace the <code>eval</code> function with a simple <code>print</code> and run the code with <em>rhino</em> in a unix environment. We also pipe the result to <a href="https://www.npmjs.com/package/js-beautify">js-beautify</a> to get a nicely formatted JavaScript.
+</p>
+
+<pre><code>
+$ rhino exported.js | js-beautify -d | sed 's/\"\ +\ \"//g' > output.js
+</code></pre>
+
+<p>
+If we open the <code>output.js</code> in a text editor, we see a lot of useful information.<br />
+Some interesting parts of the script are listed below:
+</p>
+
+<table>
+<tr>
+<td><b>Code snippet</b></td><td><b>Description</b></td>
+</tr>
+<tr>
+<td>["sanitized1.onion", "sanitized2.onion"]</td><td>TOR communication domains</td>
+</tr>
+<tr>
+<td>this.InstallCert = function()</td><td>Installing a root certificate</td>
+</tr>
+<tr>
+<td>String.format("http://127.0.0.1:5555/{0}.js?ip={1}"</td><td>Setting a proxy pac</td>
+</tr>
+<tr>
+<td>if (muilangs == 'en-US')</td><td>Checking the MUI language of the OS -> This is interesting, because only non en-US systems will be infected!</td>
+</tr>
+</table>
+
+<p>
+You could further decode the base64 encoded parts with the unix command
+</p>
+<pre><code>
+$ echo "BASE64CODE" | base64 -d
+</code></pre>
+<p>
+and you would see even more! For example a socks (socat) installation, a TOR client installation, some FTP connections, the certificate (COMODO) itself and much more.
+</p>
+
+<h2>Conclusion</h2>
+<p>
+We tried to show you an easy way to manually reverse engineer a Retefe binary. Retefe serves as an excellent case study for people who would like to use IDA for the first time.<br />
+All the information we have found in the binary by reversing it, can also be easily extracted automatically by simply brute-forcing the XOR key in the executable and scripting the Linux commands.
+</p>
+
+<br /><br />

@@ -1,0 +1,87 @@
+---
+title: "Armada Collective blackmails Swiss Hosting Providers"
+author: GovCERT.ch
+draft: false
+dateadded: 2015-10-22 06:57:16
+lastmod: 2016-04-29 08:10:05
+date: 2015-09-22 08:00:00
+aliases: 
+  - 14/armada-collective-blackmails-swiss-hosting-providers
+---
+
+<h2>UPDATE 2016-04-27</h2>
+<p>A new wave of extortion emails has arrived in different Swiss Onlineshops. We have strong indications, that those extortioner are a copycat of Armada Collective.<br />
+Our recommendations regarding these extortion emails in Switzerland are the same as last year:<br /><a href="https://www.ncsc.admin.ch/ncsc/en/home/cyberbedrohungen/ddos.html">Do not pay the ransom</a></p>
+
+-------------------------------------------
+
+<p>Earlier this year, we warned about <a href="http://www.govcert.admin.ch/blog/6/increase-in-ddos-extortion-dd4bc" title=" Increase in DDoS extortion (DD4BC)">DD4BC</a>, a hacker group that tried to extort money from high value targets in Switzerland and abroad. While DD4BC is still around, MELANI / GovCERT.ch as well as the Cybercrime Coordination Unit Switzerland (<a href="https://www.cybercrime.admin.ch/kobik/en/home.html" title="Cybercrime Coordination Unit Switzerland (CYCO)">CYCO</a>) did receive several independent reports from hosting Providers in Switzerland recently that they are being blackmailed by a hacker group that calls themselves <em>Armada Collective</em>.</p>
+
+<p>The modus operandi observed was exactly the same as in the case of DD4BC: The Aramda Collective blackmails their victim, demanding 10 BTC (Bitcoins), which is around 2’500 CHF. At the same time, the hackers launch a Distributed Denial of Service Attack (DDoS) against the victim’s web site to demonstrate their power. This <em>demo DDoS attack</em> usually lasts for 15min – 30min, while the bandwidth varies from around 300Mbit/s up to 15GBit/s and occasionally even more.The attackers threats their victim that in case of non-paying, they will launch another, even bigger DDoS attack to bring the victims website down.</p>
+
+<p>The attackers usually send their blackmail from either <em>armadacollective@openmailbox.org</em> or a similar email address at a free email service provider, using the subject "Ransom request: DDOS ATTACK!".</p>
+
+<p>The blackmail may look like this:</p>
+<code>
+From: "Armada Collective" armadacollective@openmailbox.org<br />
+To: abuse@victimdomain; support@victimdomain; info@victimdomain<br />
+Subject: Ransom request: DDOS ATTACK!<br />
+<br />
+FORWARD THIS MAIL TO WHOEVER IS IMPORTANT IN YOUR COMPANY AND CAN MAKE
+DECISION!<br />
+<br />
+We are Armada Collective.<br />
+<br />
+All your servers will be DDoS-ed starting Friday if you don't pay 20
+Bitcoins @ XXX<br />
+<br />
+When we say all, we mean all - users will not be able to access sites
+host with you at all.<br />
+<br />
+Right now we will start 15 minutes attack on your site's IP
+(<em>victims IP address</em>). It will not be hard, we will not crash it at the moment
+to try to minimize eventual damage, which we want to avoid at this moment. It's just to prove that this is not a hoax. Check your logs!<br />
+<br />
+If you don't pay by Friday , attack will start, price to stop will
+increase to 40 BTC and will go up 20 BTC for every day of attack.<br />
+<br />
+If you report this to media and try to get some free publicity by using
+our name, instead of paying, attack will start permanently and will last
+for a long time.<br />
+<br />
+This is not a joke.<br />
+<br />
+Our attacks are extremely powerful - sometimes over 1 Tbps per second.
+So, no cheap protection will help.<br />
+<br />
+Prevent it all with just 20 BTC @ XXX<br />
+<br />
+Do not reply, we will probably not read. Pay and we will know its you.
+AND YOU WILL NEVER AGAIN HEAR FROM US!<br />
+<br />
+Bitcoin is anonymous, nobody will ever know you cooperated.
+</code>
+
+<p>In case of Armada Collective, our recommendations are the same as for DD4BC: Rather than give in and pay the Armada Collective a certain amount of Bitcoins, we recommend victims to talk to their Internet Services Provider (ISP) to discuss mitigation techniques, such as IP based rate limiting or (temporary) Geo IP address filter. In addition, MELANI / GovCERT.ch and CYCO recommends to file a criminal complaint at your local police and avoid any communication with the attackers.</p>
+
+<p>Possible mitigation techniques (these have to be discussed with your ISP and / or upstream provider):</p>
+<ul>
+<li>If you are only doing business in Switzerland, you might want to consider to implement a (temporary) Geo IP filter in order to only allow connections from Swiss IP space</li>
+<li>To mitigate TCP SYN floods and layer 7 based attacks (e.g. HTTP flood), you may want to implement rate limiting based on the source IP address</li>
+<li>Most websites are hosted on servers that are only running a webservice. Hence there is no reason to allow any UDP traffic towards your webserver. You may want to consider dropping any UDP traffic towards your webserver at your or your ISPs network edge</li>
+<li>If you are hosting critical infrastructure on the same network than your website, you should consider to move your website to a different network or an anti DDoS provider</li>
+</ul>
+
+<p>MELANI / GovCERT.ch has also published a more detailed set of recommendations to mitigate DDoS attacks. These recommendations are available in German, French, Italian and English.</p>
+
+<p><strong>Massnahmen gegen DDoS Attacken (German):</strong><br />
+<a href="https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-unternehmen/aktuelle-themen/massnahmen-schutz-ddos.html" title="Massnahmen gegen DDoS Attacken">https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-unternehmen/aktuelle-themen/massnahmen-schutz-ddos.html</a></p>
+
+<p><strong>Mesures à prendre contre les attaques DDoS (French):</strong><br />
+<a href="https://www.melani.admin.ch/melani/fr/home/documentation/listes-de-controle-et-instructions/massnahmen-gegen-ddos-attacken.html" title="Mesures à prendre contre les attaques DDoS">https://www.melani.admin.ch/melani/fr/home/documentation/listes-de-controle-et-instructions/massnahmen-gegen-ddos-attacken.html</a></p>
+
+<p><strong>Misure contro attacchi DDoS (Italian):</strong><br />
+<a href="https://www.melani.admin.ch/melani/it/home/dokumentation/liste-di-controllo-e-guide/massnahmen-gegen-ddos-attacken.html" title="Misure contro attacchi DDoS">https://www.melani.admin.ch/melani/it/home/dokumentation/liste-di-controllo-e-guide/massnahmen-gegen-ddos-attacken.html</a></p>
+
+<p><strong>Measures to counter DDoS attacks (English):</strong><br />
+<a href="https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-unternehmen/aktuelle-themen/massnahmen-schutz-ddos.html" title="Measures to counter DDoS attacks">https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-unternehmen/aktuelle-themen/massnahmen-schutz-ddos.html</a></p>

@@ -1,0 +1,13 @@
+{{ define "main" }}
+<div class="row">
+  {{- partial "blogsidebar" (dict "context" . "highlight" "all" "year" "n/a") -}}
+  <div class="col-md-8 col-md-9">
+    <h1>Blog Archive</h1>
+    <p>In the Blog archive you can find all blog posts that have been published by GovCERT.ch in the past.</p>
+    {{ range (where .Site.RegularPages "Section" "blog")  }}
+    <p>{{.Date.Format "02.01.2006"}} <b><a href="{{.RelPermalink}}" target="_parent">{{.Title}}</a></b></p>
+    {{end}}
+    <p><small class="hidden-print"><a href="#" class="icon icon--before icon--power">Back to top</a></small></p>
+  </div>
+</div>
+{{ end }}

@@ -1,0 +1,74 @@
+{{ define "main" }}
+<div class="row">
+  <div class="col-md-12">
+    <a href="#" onclick="$.printPreview.printPreview()" class="hidden-xs icon icon--before icon--print pull-right" title="print"></a>
+    <h1>{{.Title}}</h1>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12 col-md-8">
+    {{.Content}}
+    <p class="back-to-top">
+      <small class="hidden-print">
+        <a href="#" class="icon icon--before icon--power">Back to top</a>
+        <span class="text-dimmed">Last updated: {{ .Page.Lastmod.Format "02.01.2006" }} </span>
+      </small>
+    </p>
+    <a name="context-sidebar" class="hidden-print"></a>
+  </div>
+
+  <div class="col-md-4">
+    <a name="context-sidebar" class="hidden-print"></a>
+    <div class="teaser section">
+      <div class="list-group clearfix nsbTeaserElementWrapper news-feed">
+        <div class="list-group-header newsfeed">
+          <h2 class="pull-left" id="news">Last Blog Posts</h2>
+          <a href="/blog/" class="pull-right icon icon--before icon--list">All Blog Posts</a>
+        </div>
+        <div class="feedListWrapper" style="display: block;">
+          {{ range first 5 (where .Site.RegularPages "Section" "blog") }}
+          <div class="list-group-item newsfeed">
+            <span class="feed-date text-dimmed">{{.Date.Format "02.01.2006"}}</span>
+            <a href="{{.RelPermalink}}">{{.Title}}</a>
+          </div>
+          {{end}}
+        </div> 
+      </div>
+    </div>
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="" role="presentation">
+        <a href="#internal" data-toggle="tab" role="tab" tabindex="-1" id="ui-tab-362" aria-selected="false"
+          aria-controls="internal" aria-expanded="false">Internal Links</a>
+      </li>
+      <li role="presentation" class="active">
+        <a href="#external" data-toggle="tab" role="tab" tabindex="0" id="ui-tab-56" aria-selected="true"
+          aria-controls="external" aria-expanded="true">External Links</a>
+      </li>
+    </ul>
+    <div class="tab-content tab-border">
+      <div class="tab-pane" id="internal" role="tabpanel" aria-hidden="true" aria-labelledby="ui-tab-362">
+        <div data-title="Internal Links">
+          <ul class="list-unstyled link-list">
+            {{ range .Site.Data.sidebars.internal_links }}
+            <li>
+              <a href="{{ .link }}">{{ .label }}</a>
+            </li>
+            {{end}}
+          </ul>
+        </div>
+      </div>
+      <div class="tab-pane active" id="external" role="tabpanel" aria-hidden="false" aria-labelledby="ui-tab-56">
+        <div data-title="External Links">
+          <ul class="list-unstyled link-list">
+            {{ range .Site.Data.sidebars.external_links }}
+            <li>
+              <a href="{{ .link }}">{{ .label }}</a>
+            </li>
+            {{end}}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{ end }}

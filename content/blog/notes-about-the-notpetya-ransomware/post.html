@@ -1,0 +1,136 @@
+---
+title: "Notes About The NotPetya Ransomware"
+author: GovCERT.ch
+draft: false
+dateadded: 2017-06-28 07:50:04
+lastmod: 2017-06-28 09:03:43
+date: 2017-06-28 00:00:00
+aliases: 
+  - 32/notes-about-the-notpetya-ransomware
+---
+
+<h2>NotPetya Ransomware</h2>
+
+<p>
+A new ransomware, currently named NotPetya, has begun spreading yesterday. There are many victims, especially in Ukraine, but also large companies have been hit hard such as Maersk or Merck. There are infections in Switzerland as well. 
+
+As many others we have analyzed the malware and tried to harden evidence about its functioning. As there are many good papers already published, we do not want to repeat all these things but to highlight a few important facts that now can be considered being hardened evidence. [1], [2], [3]
+</p>
+
+<h2>What is NotPetya?</h2>
+
+<p>
+NotPetya is a ransomware that has some familiarity with Petya/Misha that has hit the Internet starting 2016. What was special about Petya was the fact that Petya did encrypt the Master Boot Record. This is only possible with appropriate permissions. If these were not available, the other part of this malware family took over, Misha, which did a normal file encryption. 
+</p>
+
+<h2>What is so special with NotPetya / How does it spread?</h2>
+
+<p>
+NotPetya behaves similar in the way it encrypts the computer (MBR) but it also encrypts files directly. What is new and why it is not just another version of Petya is the way it can spread further. The attackers have built in several ways how the malware can propagate in an internal network:</p>
+<ul>
+<li> Using the vulnerability already known from WannaCry (EternalBlue, MS17-010) [4]</li>
+<li>Using wmic or psexec and accessing admin shares ($ shares). It enumerates the local network and tries to infect other devices. 
+</li>
+<li>
+The malware has the ability to dump credential hashes (LSA Dump) in order to get credentials [5].
+</li>
+</ul>
+<br>
+<p>Especially the second vector makes NotPetya worse than WannaCry as no actual vulnerability is being exploited. Even though there are possible precautionary measures that would have made an infection less likely, the second attack vector makes it much harder to protect against this threat.  
+
+The initial infection vector is not yet confirmed. There are however indications that the first infection vector could have been an email or a compromised update server of an Ukrainian firm distributing the malware. However this is unconfirmed and must be <b>treated with caution</b> [5].
+</p>
+
+<h2>What actions did MELANI take?</h2>
+
+<p>MELANI did inform its constituency, the National Critical Infrastructures, 27th in the afternoon and provided them with a regularly updated stream of information about how the malware works. As always with such outbreaks, there is a lot of information swirling around that needs to be checked.
+</p>
+
+<h2>What is the impact of NotPetya in Switzerland?</h2>
+<p>
+We have been informed by several companies based in Switzerland that they have been hit by the malware. Currently we do not see a larger distribution as we have had in the past with other malware waves such as Locky or Cerber. 
+</p>
+
+<h2>How can I protect myself?</h2>
+<p>
+Apart from the usual ransomware protection - please see: <a href ="https://www.melani.admin.ch/melani/en/home/themen/Ransomware.html" > MELANI Recommendations </a> - and the measures we proposed in the blog post about WannaCry (see: <a href="https://www.govcert.admin.ch/blog/31/wannacry-it-is-not-worth-it"> GovCERT Blog </a>), the following countermeasures can be applied:
+</p>
+
+<h3>Is there a kill switch?</h3>
+
+<p>
+There is a possibility to stop the malware from infecting a device via the wmic/psexec vector by placing a file in the Windows directory [6]:
+
+A file named perfc.dat (or just perfc) must be placed in %windir% (e.g. c:windows). 
+You should alter its permission to be read-only.
+
+This however does only protect machines that are not yet infected and it does only work with the NotPetya version that has been spreading yesterday. Please note that this is not a "killswitch" such as with WannaCry but more of a vaccination of a device that must be done locally and for every device in a network. 
+
+Here is the relevant code snippet in pseudo code from IDA:
+</p>
+<pre>
+<code>
+int __stdcall sub_10008320(LPWSTR pszDest)
+{
+  signed int v1; // esi@1
+  const WCHAR *v2; // eax@1
+  LPWSTR v3; // eax@2
+
+  v1 = 0;
+  v2 = PathFindFileNameW(&pszPath);
+  if ( PathCombineW(pszDest, L"C:Windows", v2) )
+  {
+    v3 = PathFindExtensionW(pszDest);
+    if ( v3 )
+    {
+      *v3 = 0;
+      v1 = 1;
+    }
+  }
+  return v1;
+}
+</code>
+</pre>
+
+<h3>Other protection measures?</h3>
+<ul>
+<li>
+A more thorough approach for blocking the spreading via psexec / wmic is to apply AppLocker settings that stop users from starting remote processes. Please take care as - depending on your environment - this might have unwanted side-effects. </li>
+<li>Another approach is using a GPO to block administrative shares (e.g. c$). This would stop this threat as well as other threats. But as with the other countermeasures, this is likely to have side effects. </li>
+<li>If not yet done, patch MS17-010 immediately!</li>
+</ul>
+</p>
+<h2>Detection possibilities for enterprises?</h2>
+
+<p>
+There are a few detection possibilities:
+
+<ul>
+<li>The malware is quite noisy when it comes to networking activity. Therefore it is possible to have an internal IDS/IPS to listen for ARP requests that enumerate the subnet and to disconnect the source of these requests from the network. Again, take care as this can have side effects. 
+</li>
+<li>If you monitor your Windows Event Logs, a newly infected device can be spotted easily as the malware erases the Eventlog using wevtutil. If you see wevutil erasing all event logs on a system, this is a good trigger that could be used to disconnect the affected device from the network and/or remove it from the domain. 
+</li>
+</ul>
+</p>
+
+<h2>Notes about paying the ransom</h2>
+<p>
+We generally recommend never paying a ransom as this only fuels the "criminal industry" with additional funds. In this case, it is not even possible to contact the attackers any more as posteo took down the contact email address being displayed in the ransom note. 
+</p>
+
+<h2> References</h2>
+<p>
+[1]: https://isc.sans.edu/forums/diary/Checking+out+the+new+Petya+variant/22562/ 
+<br>
+[2]: https://www.bleepingcomputer.com/news/security/vaccine-not-killswitch-found-for-petya-notpetya-ransomware-outbreak/ 
+<br>
+[3]: https://otx.alienvault.com/pulse/59525e7a95270e240c055ead/ 
+<br>
+[4]: https://technet.microsoft.com/en-us/library/security/ms17-010.aspx
+<br>
+[5] https://blog.trendmicro.com/trendlabs-security-intelligence/large-scale-ransomware-attack-progress-hits-europe-hard/ 
+<br>
+[6]: https://www.theregister.co.uk/2017/06/28/petya_notpetya_ransomware/
+<br>
+[7]: https://twitter.com/0xAmit/status/879764284020064256  
+</p>

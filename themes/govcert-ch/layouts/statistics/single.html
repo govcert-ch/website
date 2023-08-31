@@ -1,0 +1,21 @@
+{{define "scripts"}}
+{{ range .Params.js }}
+  <script src="/assets/js/highcharts/{{.}}.js"></script>
+{{ end }}
+<script src="data.js"></script>
+<script src="chart.js"></script>
+{{ end }}
+{{ define "main" }}
+<div class="row">
+  {{- partial "statisticssidebar" (dict "context" . "highlight" .Title) -}}
+  <div class="col-md-8">
+    <h1>{{.Title}}</h1>
+    <div id="map"></div>
+    <br />
+    {{.Content}}
+    <small class="hidden-print">
+      <p><small class="hidden-print"><a href="#" class="icon icon--before icon--power">Back to top</a></small></p>
+    </small>
+  </div>
+</div>
+{{ end }}

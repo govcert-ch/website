@@ -1,0 +1,76 @@
+---
+title: "Leaked Accounts"
+author: GovCERT.ch
+draft: false
+dateadded: 2017-08-29 08:00:00
+lastmod: 2017-08-29 08:00:00
+date: 2017-08-29 08:00:00
+aliases: 
+  - 34/leaked-accounts
+---
+
+<p>
+	MELANI/GovCERT has been informed about potentially leaked accounts that are in danger of being abused. MELANI/GovCERT provides a tool for checking whether your account might be affected: <a href="https://checktool.ch">https://checktool.ch</a>
+</p>
+
+<p>We would like to give some technical information about the tool:</p>
+
+<ul>
+	<li>We only transfer a SHA256 hash that is created on the client side using JavaScript. Thus we don't know the queried eMail addresses or account name.</li>
+	<li>No eMail addresses or account names are stored on the server, just the hashes.</li>
+	<li>All traffic is being transferred using SSL/TLS.</li>
+</ul>
+<br />
+<p>If we get additional eMail addresses or account names from other sources, we are going to update the database and inform about it using this blog and Twitter. If you have any technical questions, do not hesitate to contact us at outreach [at] govcert [dot] ch or via Twitter: <a href="https://twitter.com/GovCERT_CH">https://twitter.com/GovCERT_CH</a>.</p>
+
+<h2>FAQ</h2>
+
+<p>
+	Q: Why do we use Cloudflare?<br />
+	<i>
+		A: We considered the risk of DDoS attacks to be very high. Cloudflare is an experienced DDoS mitigation provider. We decided to use a DDoS mitigation provider, not only for the protection of the tool itself, but also for the ISP where our server is located.
+	</i>
+</p>
+
+<p>
+	Q: Does that mean that the server is located in an US cloud?<br />
+	<i>
+		A: No, the server with the hashes is located in Switzerland. We just use Cloudflares network for DDoS mitigation. The IP address you see, when doing a lookup is the front-end server in the cloudflare network. This server does not store any data, but passes the requests to our backend system.
+	</i>
+</p>
+
+<p>
+	Q: Who does have access to the actual eMail addresses or account names?<br />
+	<i>
+		A: No one except us. The eMail addresses and account names provided to us, are not on the server. We just stored the hashes on the server. Only hashes are transferred from the client to server. If you enter the eMail address or account name, it is immediately hashed on the client side and never stored.
+	</i>
+</p>
+
+<p>
+	Q: Why can’t I search for a whole domain or with a wildcard?<br />
+	<i>
+		A: We did not store eMail addresses or account names on the system, only hashes. This makes a wildcard search impossible by design. Apart from that, we have privacy concerns, if one can basically have a look at all eMail addresses or account names. If a provider or organization would like to have a search for a whole domain, we can do that offline. Please provide some proof that you are really responsible for the domain.
+	</i>
+</p>
+
+<p>
+	Q: Why did you do this? Why did you not just pass the information to a site like haveibeenpwned.com?<br />
+	<i>
+		A: We were not in the position to pass the raw data to another organization.
+	</i>
+</p>
+
+<p>
+	Q: For how long did you know about this data?<br />
+	<i>
+		A: We received the dataset last week.
+	</i>
+</p>
+
+<p>
+	Q: What else do you have to say?<br />
+	<i>
+		A: Always use good passwords (long enough), choose different passwords for every account, use a 2 factor authentication whenever possible.
+	</i>
+</p>
+<br />

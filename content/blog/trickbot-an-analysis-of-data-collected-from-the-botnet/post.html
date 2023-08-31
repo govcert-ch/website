@@ -1,0 +1,34 @@
+---
+title: "Trickbot - An analysis of data collected from the botnet"
+author: GovCERT.ch
+draft: false
+dateadded: 2019-09-25 06:38:54
+lastmod: 2019-09-25 06:51:48
+date: 2019-09-25 06:40:47
+aliases: 
+  - 37/trickbot-an-analysis-of-data-collected-from-the-botnet
+---
+
+<p>We are monitoring various threats and in that context we have collected quite some data about the Trickbot botnet in the past few years. <a href="https://www.govcert.ch/whitepapers/3/trickbot-an-analysis-of-data-collected-from-the-botnet" target="_parent" title="Trickbot - An analysis of data collected from the botnet">This paper</a> is based on an analysis of selected aspects of our Trickbot data collection. Some of our analysis is rather straightforward, yet, we also take the freedom to make some speculative statements, which might turn out to be debatable or plain wrong. In that spirit we are open for discussions and are happy to receive comments by the readers of this article.</p>
+<p>Our analysis consists of two main parts. In the first part we consider the PE timestamps of Trickbot droppers (i.e., the binaries being distributed by the Trickbot operators) and of the respective payloads (i.e., the PE binaries which are unpacked and then executed once a dropper is executed). The analysis is based on a collection of approximately <span class="math inline">2100</span> droppers and corresponding payloads which were collected between July 2016 and February 2019. The main insights from this analysis are:</p>
+<ul>
+<li><p>The PE timestamp of many trickbot droppers is backdated, while the PE timestamp of the payloads is unmodified and thus reflects the actual production time of samples.</p></li>
+<li><p>The same payload is re-packed over and over again into different droppers. We have observed up to <span class="math inline">69</span>-fold repacking.</p></li>
+<li><p>The working times of the operators is consistent with working hours in the Moscow time zone.</p></li>
+<li><p>The production of Trickbot binaries is likely operated by humans, and thus not fully automated.</p></li>
+</ul>
+<p>In the second second part we analyse a collection of Trickbot config files which we have collected by emulating the protocol over a period of <span class="math inline">4</span>-<span class="math inline">5</span> months end of 2018 beginning of 2019. The config files contain information on the Trickbot infrastructure such as exfiltration sites used by different stealer modules, the first level C2 infrastructure, etc., as well as lists of targeted financial institutions.</p>
+<p>The main insights from this analysis are:</p>
+<ul>
+<li><p>There is a sequence visible in two configuration types (static injects and mailconf) that shows that the attackers are regularly exchanging these infrastructure elements.</p></li>
+<li><p>The sequence is less clear in the main configuration file where we can observe some temporal overlapping of the C2 servers.</p></li>
+<li><p>The lifetime of how long a C2 server remains in service varies. The C2 servers in the main config are used only for a short time (with some exceptions) and the C2 servers from the static inject and mailconf file are used for a longer period.</p></li>
+<li><p>This leads to the conclusion that the attackers are actively managing their infrastructure by exchanging the C2 servers on a regular base.</p></li>
+<li><p>We also extracted the targets from the configuration files and observed that the main targets are banks in the US, Great Britain, Ireland and Germany. Interestingly, German targets were added during our analysis period in the month of November.</p></li>
+</ul>
+<p>Our Trickbot paper can be downloaded here:</p>
+<ul>
+<li><a href="https://www.govcert.ch/whitepapers/3/trickbot-an-analysis-of-data-collected-from-the-botnet" target="_parent" title="Trickbot - An analysis of data collected from the botnet">Trickbot - An analysis of data collected from the botnet</a></li>
+</ul>
+<br />
+<br />

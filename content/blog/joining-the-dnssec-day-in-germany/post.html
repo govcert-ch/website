@@ -1,0 +1,46 @@
+---
+title: "Joining the DNSSEC Day in Germany"
+author: GovCERT.ch
+draft: false
+dateadded: 2015-06-26 09:58:30
+lastmod: 2015-06-30 09:47:37
+date: 2015-06-30 09:05:00
+aliases: 
+  - 9/joining-the-dnssec-day-in-germany
+---
+
+<p>Today, our colleagues at the German Bundesamt für Sicherheit in der Informationstechnik (<a href="https://www.bsi.bund.de" title="Bundesamt für Sicherheit in der Informationstechnik">BSI</a>) and the registry for ccTLD .de (<a href="http://www.denic.de/" title="DENIC">DENIC</a>) are hosting a <a href="https://www.bsi.bund.de/DE/Presse/Pressemitteilungen/Presse2015/Empfehlung_DNSSEC-29062015.html" title="BSI veröffentlicht Cyber-Sicherheitsempfehlung zu DNSSEC">DNSSEC day</a> in Germany. The focus of the event are the benefits and use cases of DNSSEC for internet users and system administrators. We at GovCERT.ch would like to join our colleagues efforts in Germany and publish a blog post on the current situation of DNSSEC in the Swiss name space <strong>.ch</strong>. But before we start looking into the current situation within ccTLD .ch when it comes to DNSSEC, we want to make a short introduction to DNSSEC for those who are not familiar with the technology.</p>
+
+<p>DNSSEC stands for <em><strong>D</strong>omain <strong>N</strong>ame <strong>S</strong>ystem <strong>S</strong>ecurity <strong>E</strong>xtensions</em> and has been introduced in 1999 (<a href="https://tools.ietf.org/html/rfc2535" title="RFC2535">RFC2535</a>, which has been updated in 2005 - see <a href="https://tools.ietf.org/html/rfc4034" title="RFC4034">RFC4034</a>). The goal of DNSSEC is to implement authenticity and integrity in the DNS by taking advantage of <em>digitally signing</em> DNS records using <em>public-key cryptography</em>. If a domain owner (registrant) decides to implement DNSSEC for his domain name, he publishes a <em>DNSKEY</em> in the DNS and provides a <em>Delegation Signer</em> (DS) to his domain registrar. The <em>DNSKEY</em> is then being authenticated by a chain of trust using Delegation Signer Resource Records (<em>DS records</em>). Since the DNS is hierarchic, the whole chain must be authenticated and signed using DNSSEC.</p>
+
+<p>So, what are the benefits of using DNSSEC? DNSSEC helps you to prevent man-in-the-middle attacks on the DNS layer and DNS cache poisoning. Besides that, DNSSEC also provides a secure ground that allows you making usage of further security mechanisms that rely on DNSSEC, such as DNS-based Authentication of Named Entities (DANE).</p>
+
+<p>That all sounds nice, so we at GovCERT.ch decided to make a short survey on the current usage of DNSSEC within the Swiss name space (ccTLD .ch), checking <strong>1'104'553 unique domain names</strong> registered within ccTLD .ch for DNSSEC support.</p>
+
+<center><a href="assets/govcert_dnssec_survey.png"><img src="assets/govcert_dnssec_survey.png" alt="GovCERT.ch DNSSEC survey results (ccTLD .ch)"/></a><br /><em>GovCERT.ch DNSSEC survey results (ccTLD .ch)</em></center>
+
+<p>The chart above shows a statistical breakdown of the DNS responses. About 93% of all domain names we have queried are currently active (NOERROR), while only <strong>0.30% domain names</strong> are signed with DNSSEC and have a valid DNSSEC signature. Another 5% of all queried domain names are currently not resolving (NXDOMAIN), while another 1.54% have some major DNS problems or an invalid DNSSEC signature. What surprised us in our survey is the fact that even many of the big and <em>well-known</em> websites in Switzerland are not supporting DNSSEC.</p>
+
+<p>DNSSEC is a great way to make DNS more secure, so why are only a very few domain owners using this technology?</p>
+
+<p>One of the main problem is the fact that, to have DNSSEC working, the whole DNS chain needs to support DNSSEC. This starts with the root zone, going down to the registry (ccTLD .ch), registrar and the DNS service provider, that needs to interact with the registrar's systems every time a DNS key is modified (added/changed/removed). While the root zone and ccTLD .ch have been supporting DNSSEC for many years, many Swiss registrars and DNS service provider are (still) not supporting DNSSEC yet, partly due to the complexity needed to run it properly, and partly due to a certain lack of standardization in communication protocols.</p>
+
+<p>As long as we expect domain owners to run DNSSEC on their domains on their own, it's hardly going to get traction: you need quite a bit of knowledge about DNS to get DNSSEC working. For a webmaster that runs a website just in spare time, it might be too much effort or there is simply lack of knowledge. In order to have DNSSEC working, you need to change your DNSKEY / DS record at least once per year. This is another barrier for many webmasters. If you do it once and forget to update your DNSKEY / DS record, DNS resolvers that are using DNSSEC will no longer resolve your domain name and your website and mail server will not work anymore from certain places.</p>
+
+<p>So, what's the solution? We at GovCERT.ch would like to encourage registrars and DNS service providers in Switzerland to implement DNSSEC in the medium term. In order to make the use of DNSSEC for people with no IT knowledge usable, its complexity should be hidden to them: the DNS providers' systems should take care of details like key generation, key rotation, DS record upload and so on. Let the users do just what they do now: manage entries inside their domains without knowledge of the complex parts involved.</p>
+
+<p>Registrars and DNS service providers won't make more money whether they offer DNSSEC to their customers or not. But providers that are doing so are contributing an important part to the health of the Swiss cyberspace and making the internet in Switzerland more secure.</p>
+
+<p>If you are a domain owner and you would like to figure out if your registrar supports DNSSEC, you may want to look at the following website:</p>
+<ul>
+<li><a href="https://www.icann.org/resources/pages/deployment-2012-02-25-en" title="ICANN: Registrars that support end user DNSSEC management, including entry of DS records">ICANN: Registrars that support end user DNSSEC management, including entry of DS records</a>
+</ul>
+
+<p>More information about DNSSEC can be found here:</p>
+<ul>
+<li><a href="https://www.bsi.bund.de/DE/Presse/Pressemitteilungen/Presse2015/Empfehlung_DNSSEC-29062015.html" title="BSI veröffentlicht Cyber-Sicherheitsempfehlung zu DNSSEC">BSI veröffentlicht Cyber-Sicherheitsempfehlung zu DNSSEC</a></li>
+<li><a href="https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Cyber-Sicherheit/Themen/Umsetzung_von_DNSSEC.pdf?__blob=publicationFile" title="BSI: Umsetzung von DNSSEC">BSI: Umsetzung von DNSSEC</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Domain_Name_System_Security_Extensions" title="Wikipedia: DNSSEC">Wikipedia: DNSSEC</a></li>
+<li><a href="https://www.nic.ch/reg/cm/wcm-page/dnssec/?lid=en" title="nic.ch: What is DNSSEC?">nic.ch: What is DNSSEC?</a></li>
+<li><a href="https://en.wikipedia.org/wiki/DNS-based_Authentication_of_Named_Entities" title="Wikipedia: DANE">Wikipedia: DANE</a></li>
+</ul>

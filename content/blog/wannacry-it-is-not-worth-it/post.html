@@ -1,0 +1,85 @@
+---
+title: "WannaCry? It is not worth it!"
+author: GovCERT.ch
+draft: false
+dateadded: 2017-05-15 08:14:02
+lastmod: 2017-05-15 08:46:59
+date: 2017-05-15 08:30:00
+aliases: 
+  - 31/wannacry-it-is-not-worth-it
+---
+
+<p>On Friday, May 12th 2017, a ransomware called “WannaCry” hit the cyber space. Among the victims are hospitals in UK, the national telecom provider in Spain and U.S delivery service FedEx. But WannaCry did not only hit the internet, the ransomware was also very present in newspapers worldwide. It also kept us and our partners from abroad very busy during the last weekend, analyzing the malware, reevaluating the current situation in Switzerland and world-wide, communicating with National Critical Infrastructure, and talking to the press.</p>
+
+<p>While we analyzed the threat as well, there are already many good papers on WannaCry. For this reason we do for once not focus on the exact technical implementation, but try to give a comprehensive overview of this threat and the impact WannaCry has, with a focus on the situation in Switzerland.</p>
+
+<h2>What is WannaCry?</h2>
+<p>WannaCry (also known as WannaCrypt or Wana Decrypt0r) is a so-called ransomware that encrypts files on the victims computer and demands a certain amount of money in order to release (decrypt) the encrypted files again (blackmailing). But Ransomware is not a new threat: Almost a year ago, MELANI - together with other governmental organizations, partners from the industry, police and consumer protection organizations - held a national Ransomware Awareness Day.<p>
+
+<h2>What is so special with WannaCry?</h2>
+<p>While Ransomware is usually being spread by miscreants through Drive-By exploits (compromised websites that try to infect the visitor’s machine with malware) or spam emails, WannaCry is being spread by a worm, exploiting a known remote code execution vulnerability in the Windows operating system. By taking advantage of this worm functionality, WannaCry is able to propagate and spread itself, infecting other computers connected to a network automatically without the attacker’s or victim’s active interaction.</p>
+
+<h2>How does WannaCry spread?</h2>
+<p>WannaCry comes with a separate software component that is able to spread itself through a known remote code execution (RCE) vulnerability in the SMB protocol called “EternalBlue”. RCE means that it is possible to exploit the vulnerability from remote without having access to the victim’s machine. By this, WannaCry was able to infect at least 200’000 computers world-wide (and still counting). Whether the initial attack vector has been an email or not is still discussed intensely.</p>
+<p>The SMB protocol is used by computers running the Windows operating system to communicate with each other. The EternalBlue exploit was released by a hacking group called “Shadow Brokers” in April 2017, who claims that the exploit has been developed by U.S. National Security Agency (NSA).</p>
+<p>The vulnerability is present in all versions of Windows (XP, Vista, Windows 7, Windows 8, Windows 10). In March 2017, Microsoft released a security update (MS17-010 <a href="https://technet.microsoft.com/en-us/library/security/ms17-010.aspx">https://technet.microsoft.com/en-us/library/security/ms17-010.aspx</a>) that fixed the EternalBlue vulnerability in SMB.</p>
+
+<h2>How is it possible that there are still unpatched systems?</h2>
+<p>Although Microsoft released a patch for the said vulnerability two months ago, there are still unpatched systems out there. While your PC at home has - hopefully - installed the patch automatically, the situation in corporate networks is a bit different. Corporate networks are complex and systems rely on each other. Sometimes, it is simply not possible to patch a system as this would come with the need of rebooting the system, and some systems simply can’t be rebooted. On the other hand it is said that many organizations that have been hit hard still used Windows XP. Microsoft put Windows XP End-of-Life a long time,  and organizations that were still being using Windows XP had been told many times to update to a newer version of the Windows Operating System..</p>
+
+<h2>Has it been really that big?</h2>
+<p>Even though WannaCry has been hitting some organizations very hard and showed once more the vulnerability of a modern society, the attention it got is too high compared to the actual potential and impact. It used a vulnerability that has been known for several months. The attackers made mistakes (“kill switch”) and were seemingly unable to cope with the countermeasures of the security community. An infection count of 200’000 is not so high - a traditional malspam run may have a much larger impact and so have had other worms (e.g. "Code Red") in the past. We do not want to minimize this threat, especially as hospitals have been among the victims. However it is important to keep the relations and not forget that the Internet is full of vulnerable and infected devices.  Criminals do their misdeeds every day and the struggle for a safe and secure Internet must be fought every day. Every participant has its own responsibility by keeping the systems up-to-date.</p>
+
+<h2>What actions did MELANI take?</h2>
+On May 12th 2017, we received information from our European partners about WannaCry hitting hospitals in UK and the telecom sector in Spain. Evaluating the situation led us to the decision to notify National Critical Infrastructure immediately. Since this Friday, we are in close contact with our international partners. We are reevaluating the situation continuously and feeding National Critical Infrastructure with Indicators of Compromise (IOCs), situation updates, and recommendations. We have analyzed the malware and tried to confirm or falsify the various claims on the Internet about the functioning of this threat.</p>
+<p>Starting Saturday, May 13th 2017, we are notifying Internet Services Providers (ISPs) in Switzerland about WannaCry infections. Should you receive such a notification from your ISP, we strongly recommend you to backup your files and do a full system reinstall and patch the system before connecting it to the network again. Please make also sure to keep your backup devices (harddisks, NAS, …) offline after the backup has made, because WannaCry can also attack your backup otherwise.</p>
+
+<h2>What is the impact of WannaCry in Switzerland?</h2>
+<p>So far, we are aware of 183 potential victims in Switzerland (State on Sunday Evening). Those have been either notified by us directly or the ISP.</p>
+<p>However, the potential impact of WannaCry in Switzerland is much bigger: Every day, we record more than 5’000 systems in Switzerland that are directly connected to the internet over the SMB protocol and that are potentially vulnerable for such threats.</p>
+
+<h2>How can I protect myself?</h2>
+<p>The easiest way to protect yourself from getting a victim of WannaCry is to install the latest windows patches. In general, we strongly recommend you to always keep your system up to date, including 3rd party software (such as Adobe Flash, Oracle Java, Firefox, etc). For end-user systems or KMUs with little IT know-how, we recommend installing patches in an automated way. For larger organizations, we recommend defining a patch process that is able to deploy patches fast. It makes sense to have a normal patch cycle with more quality assurance and to have an emergency patch cycle that can be triggered in case of emergency. The latter should allow an organization to distribute patches within a few hours.</p> 
+
+But there is more you can do:<br />
+<ul>
+<li>Regularly make a backup of your data. Define a backup strategy involving different generations of backups.  The backups should be stored offline, i.e. on an external medium such as an external hard disk. Thus, make sure that the medium where the backup is saved is disconnected from the computer after the back-up procedure is complete. Otherwise data on the back-up medium might be encrypted and rendered unusable in the event of a ransomware attack.</li>
+<li>Always be careful with suspicious emails, emails which you receive unexpectedly, or which come from unknown senders. Do not follow the instructions in the text, do not open any attachments, and do not click on any links.</li>
+<li>Always keep your virus protection up to date. If you use virus protection which is subject to a charge, always ensure that the subscription is renewed for an additional year. Otherwise the virus protection will expire and be of no use.</li>
+<li>A personal firewall must be installed and kept up to date.</li>
+</ul>
+<br />
+For companies MELANI recommends the following in addition to the measures outlined above:<br />
+<ul>
+<li>Do never expose SMB to the Internet. If you need to have file shares available from the outside, do it properly using a VPN. Configure the VPN correctly and avoid exposing the file server.</li>
+<li>Apply the principle of least privilege as tight as possible. The more shares a user has write access to, the worse a ransomware can hit your organization.</li>
+<li>Reconsider your backup strategy. Do you have enough offline copies of the backup in case of an infection? Are the recovery times adequate? Can you restore large volumes of data within your recovery time objectives?</li>
+<li>Test the backups on a regular base. Have a ransomware infection plan ready and test it on a regular basis. Ransomware infections should be part of your business continuity planning / disaster recovery planning.</li>
+<li>Make a segmentation of your networks. This reduces the impact of any threat, especially from threats with worm functionality.</li>
+<li>You can obtain additional protection against malware (such as ransomware) for your IT infrastructure by using the Windows AppLocker. By using Windows AppLocker (or a similar product), you can specify which software is allowed to run on the computers in your company.</li>
+<li>By using the Microsoft Enhanced Mitigation Experience Toolkit (EMET), you can prevent known and unknown vulnerabilities in software used in your company from being exploited and used for installing malware.</li>
+<li>Block the reception of dangerous email attachments at your email gateway. <br />These include among others:<br />
+.js (JavaScript)<br />
+.jar (Java)<br />
+.bat (Batch file)<br />
+.exe (Windows executable)<br />
+.cpl (Control Panel)<br />
+.scr (Screensaver)<br />
+.com (COM file)<br />
+.pif (Program Information File)<br />
+.vbs (Visual Basic Script)<br />
+.ps1 (Windows PowerShell)
+</li>
+<li>Make sure that dangerous email attachments such as these are also blocked if they are sent to recipients in your company in archive files such as ZIP, RAR, or even in encrypted archive files (e.g., in a password-protected ZIP file).</li>
+<li>In addition, all email attachments containing macros (e.g., Word, Excel or PowerPoint attachments) should be blocked.</li>
+</ul>
+<br /><br />
+<b>Further reading</b><br />
+Ransomware:<br />
+<a href="https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-unternehmen/vorfall-was-nun/ransomware.html">https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-unternehmen/vorfall-was-nun/ransomware.html</a><br />
+Checklist on IT security for SMEs:<br />
+<a href="https://www.ncsc.admin.ch/ncsc/de/home/infos-fuer/infos-unternehmen.html">https://www.ncsc.admin.ch/ncsc/de/home/infos-fuer/infos-unternehmen.html</a><br />
+Swiss Ransomware Awareness Day:<br />
+<a href="http://web.archive.org/web/20200804091612/https://www.melani.admin.ch/melani/en/home/dokumentation/newsletter/ransomwareday.html">http://web.archive.org/web/20200804091612/https://www.melani.admin.ch/melani/en/home/dokumentation/newsletter/ransomwareday.html</a>
+<br /><br />
+

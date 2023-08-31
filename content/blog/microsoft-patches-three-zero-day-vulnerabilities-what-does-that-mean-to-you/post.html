@@ -1,0 +1,86 @@
+---
+title: "Microsoft patches three zero-day vulnerabilities - what does that mean to you?"
+author: GovCERT.ch
+draft: false
+dateadded: 2014-10-15 06:51:57
+lastmod: 2014-10-15 07:20:41
+date: 2014-10-15 07:00:00
+aliases: 
+  - 3/microsoft-patches-three-zero-day-vulnerabilities-what-does-that-mean-to-you
+---
+
+<h3>The facts</h3>
+
+<p>On Tuesday, Oct 14 2014, Microsoft published 8 patches that fix several vulnerabilities in the Windows operating system. An overview of the
+patches and their severity is available on the Microsoft website and the ISC Handler Diary Blog.</p>
+
+<p>Microsoft Security Bulletin Summary for October 2014:<br />
+<a href="https://technet.microsoft.com/library/security/ms14-oct" title="Microsoft Security Bulletin Summary for Oct 2014">https://technet.microsoft.com/library/security/ms14-oct</a></p>
+
+<p>InfoSec Handlers Diary Blog (incl. ISC rating on the released patches):<br />
+<a href="https://isc.sans.edu/diary/Microsoft+October+2014+Patch+Tuesday/18819" title="Microsoft October 2014 Patch Tuesday">https://isc.sans.edu/diary/Microsoft+October+2014+Patch+Tuesday/18819</a></p>
+
+<p>Several patches released by Microsoft are being classified by Microsoft and the Internet Storm Center (ISC) as <em>critical</em>. The most
+interesting ones are MS14-058 and MS14-060, which are patching three zero-day vulnerabilities in the windows operating system. This means
+that these vulnerabilities have already been identified by bad actors and are currently being exploited in order to spread malware.</p>
+
+<table>
+<tr><th>MS Bulletin</th><th>CVE</th><th>Description</th><th>APT Campaign</th></tr>
+<tr><td><a href="https://technet.microsoft.com/en-us/library/security/ms14-058.aspx" title="MS14-058">MS14-058</a></td><td>CVE-2014-4113</td><td>Zero-Day Privilege Escalation</td><td>HURRICANE PANDA</td></tr>
+<tr><td><a href="https://technet.microsoft.com/en-us/library/security/ms14-058.aspx" title="MS14-058">MS14-058</a></td><td>CVE-2014-4148</td><td>Zero-Day in Windows TTF</td><td>HURRICANE PANDA</td></tr>
+<tr><td><a href="https://technet.microsoft.com/en-us/library/security/ms14-060.aspx" title="MS14-060">MS14-060</a></td><td>CVE-2014-4114</td><td>Zero-Day in OLE packager</td><td>Sandworm</td></tr>
+</table>
+
+<p>MS14-058 catches two zero-day vulnerabilities (CVE-2014-4113 and CVE-2014-4148). According to the security service providers FireEye and CrowdStrike, both vulnerabilities are already being exploited in the wild and are associated with an APT called HURRICANE PANDA. More details about the attack and the two reported zero-day vulnerabilities can be found on the blogs of <a href="http://www.fireeye.com/blog/technical/targeted-attack/2014/10/two-targeted-attacks-two-new-zero-days.html" title="Two Limited, Targeted Attacks; Two New Zero-Days">FireEye</a> and <a href="http://blog.crowdstrike.com/crowdstrike-discovers-use-64-bit-zero-day-privilege-escalation-exploit-cve-2014-4113-hurricane-panda/" title="CrowdStrike Discovers Use of 64-bit Zero-Day Privilege Escalation Exploit (CVE-2014-4113) by Hurricane Panda">Crowdstrike</a> blog.</p>
+
+<p>The 3rd zero-day vulnerability (CVE-2014-4114) is related to yet another targeted attack against various organizations. According to the security service provider iSIGHT, the malware campaign - which is named "Sandworm" - is targeting the following organizations and sectors:</p>
+<ul>
+<li>NATO</li>
+<li>Governmental Organizations in Europe</li>
+<li>Firms in the Energy Sector</li>
+<li>European telecommunications companies</li>
+<li>United States academic organization</li>
+</ul>
+
+<p>According to iSIGHT, the attacks are at least partially making use of a malware called BlackEnergy, which has been already around since at least
+<a href="http://atlas-public.ec2.arbor.net/docs/BlackEnergy+DDoS+Bot+Analysis.pdf" title="BlackEnergy DDoS bot analysis">2007</a>. While BlackEnergy used to target random internet users in the early years, foreign actors have started to use BlackEnergy in targeted attacks against governmental bodies later. Further information about
+the recent attacks involving BlackEnergy can be found on <a href="http://www.isightpartners.com/2014/10/cve-2014-4114/" title="iSIGHT discovers zero-day vulnerability CVE-2014-4114 used in Russian cyber-espionage campaign">iSIGHT's blog</a>.</p>
+
+<h3>What does that mean to you?</h3>
+
+<p>Well, this is a nice story, but you may ask yourself what does that mean for you and your organizations. That's indeed a good question.</p>
+
+<p>First of all: If you are a random Internet user, you are most likely safe (at least for the moment). For now (2014-10-15), there is no working exploit in the wild that random hackers could use to compromise your system. Bad actors that are having a working exploit are interested in and targeting a very limited number of organizations and sectors. However, be aware that this may change in the near future. So patching your system at the earliest moment possible is a good idea. You may want to ensure that
+automatic updates are turned on. A How-To to turn on automatic updates on your computer can be found on the Windows Help portal.</p>
+
+<p>Turn automatic updating on or off (English):<br />
+<a href="http://windows.microsoft.com/en-US/windows/turn-automatic-updating-on-off" title="Turn automatic updating on or off">http://windows.microsoft.com/en-US/windows/turn-automatic-updating-on-off</a></p>
+
+<p>Aktivieren oder Deaktivieren von automatischen Updates (German):<br />
+<a href="http://windows.microsoft.com/de-ch/windows/turn-automatic-updating-on-off" title="Aktivieren oder Deaktivieren von automatischen Updates">http://windows.microsoft.com/de-ch/windows/turn-automatic-updating-on-off</a></p>
+
+<p>Activer ou désactiver les mises à jour automatiques (French):<br />
+<a href="http://windows.microsoft.com/fr-ch/windows/turn-automatic-updating-on-off" title="Activer ou désactiver les mises à jour automatiques">http://windows.microsoft.com/fr-ch/windows/turn-automatic-updating-on-off</a></p>
+
+<p>If your organization is a governmental organization, working in the energy or telecommunication sector or is an academic organization in the US, you might have to worry. According to iSIGHT, you may be on the <em>shopping list</em> (target list) of Sandworm. You should ensure that you deploy the two patches MS14-058 and MS14-060 in your corporate network at the earliest convenience.</p>
+
+<p>For corporate networks, GovCERT.ch recommends the use of <a href="http://support.microsoft.com/kb/2458544/" title="Enhanced Mitigation Experience Toolkit - EMET">EMET</a> (Enhanced Mitigation Experience Toolkit) and <a href="http://technet.microsoft.com/en-US/library/dd759113.aspx" title="Windows AppLocker">Windows AppLocker</a>. EMET has been developed by Microsoft and is available for free. It helps you to mitigate zero-day attacks against hosts running the windows operating system. Windows AppLocker has been introduced in Win7 and is built in in any newer Windows operating system. It allows you to define policies in regards to which hosts are allowed to execute which code / executables. By this you are able to detect and prevent the execution of unknown and arbitrary code on hosts running the Windows operating system.</p>
+
+<p>If you are running an IDS/IPS such as Snort or Suricata to identify malicious traffic in your network, you may want to have a look at the following rules that help you spot botnet C&C traffic related to BlackEnergy:</p>
+
+<table>
+<tr><th>SID</th><th>Message</th><tr>
+<tr><td>2007668</td><td>ET TROJAN Blackenergy Bot Checkin to C&C</td></tr>
+<tr><td>2010875</td><td>ET TROJAN Blackenergy Bot Checkin to C&C (2)</td></tr>
+</table>
+
+<p>Unfortunately, neither FireEye, nor CrowdStrike or iSIGHT published any Indicators Of Compromise (IOCs) yet. We are sure that they will be available later. Once they are, we will update this blog post.</p>
+
+<h3>References</h3>
+<ul>
+<li><a href="http://www.fireeye.com/blog/technical/targeted-attack/2014/10/two-targeted-attacks-two-new-zero-days.html" title="FireEye: Two Limited, Targeted Attacks; Two New Zero-Days">FireEye: Two Limited, Targeted Attacks; Two New Zero-Days</a></li>
+<li><a href="http://blog.crowdstrike.com/crowdstrike-discovers-use-64-bit-zero-day-privilege-escalation-exploit-cve-2014-4113-hurricane-panda/" title="CrowdStrike Discovers Use of 64-bit Zero-Day Privilege Escalation Exploit (CVE-2014-4113) by Hurricane Panda">CrowdStrike Discovers Use of 64-bit Zero-Day Privilege Escalation Exploit (CVE-2014-4113) by Hurricane Panda</a></li>
+<li><a href="http://www.isightpartners.com/2014/10/cve-2014-4114/" title="iSIGHT discovers zero-day vulnerability CVE-2014-4114 used in Russian cyber-espionage campaign">iSIGHT discovers zero-day vulnerability CVE-2014-4114 used in Russian cyber-espionage campaign</a></li>
+<li><a href="http://www.f-secure.com/documents/996508/1030745/blackenergy_whitepaper.pdf" title="F-Secure: BLACKENERGY & QUEDAGH">F-Secure: BLACKENERGY & QUEDAGH</a></li>
+<li><a href="http://blog.trendmicro.com/trendlabs-security-intelligence/an-analysis-of-windows-zero-day-vulnerability-cve-2014-4114-aka-sandworm/" title="Trend Micro: An Analysis of Windows Zero-day Vulnerability CVE-2014-4114 aka Sandworm">Trend Micro: An Analysis of Windows Zero-day Vulnerability CVE-2014-4114 aka Sandworm</a></li>
+</ul>

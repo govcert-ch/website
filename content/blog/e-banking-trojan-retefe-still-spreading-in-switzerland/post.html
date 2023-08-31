@@ -1,0 +1,87 @@
+---
+title: "e-Banking Trojan Retefe still spreading in Switzerland"
+author: GovCERT.ch
+draft: false
+dateadded: 2015-05-01 09:39:24
+lastmod: 2019-05-14 13:52:04
+date: 2015-05-01 13:15:00
+aliases: 
+  - 5/e-banking-trojan-retefe-still-spreading-in-switzerland
+---
+
+<p>In July 2014, Trend Micro published a report about a threat called <a href="http://www.trendmicro.com/cloud-content/us/pdfs/security-intelligence/white-papers/wp-finding-holes-operation-emmental.pdf" title="Finding Holes - Operation Emmental">Retefe</a>, an ebanking Trojan that is targeting financial institutions in Switzerland, Austria, Sweden and Japan. In fact, Retefe is already around since <a href="http://www.melani.admin.ch/dienstleistungen/archiv/01581/index.html?lang=de" title="Retefe: Angriff auf Schweizer Bankkunden - Präzisierung durch MELANI">November 2013</a>. Back then, MELANI already took appropriate action together with the affected financial institutions and ISPs in Switzerland to mitigate the threat. However, Retefe is still being distributed in recent spam campaigns, targeting Swiss Internet users.</p>
+
+<p>One of the most recent spam campaigns has been observed yesterday, where hackers spammed out emails to Swiss Internet users abusing compromised email accounts of well known email services providers, such as GMX. By using compromised email accounts, spammers and hackers are able to bypass DNSBL-based spam filters.</p>
+
+<center><a href="assets/retefe_quittung_201504.png"><img src="assets/retefe_quittung_201504.png" alt="Retefe Spam run April 2015 - Quittung" height="337" width="450"/></a><br /><em>Fake receipt "Quittung" (click to enlarge)</em></center>
+<br />
+<center><a href="assets/retefe_zalando_201504.png"><img src="assets/retefe_zalando_201504.png" alt="Retefe Spam run April 2015 - Zalando" height="349" width="450"/></a><br /><em>Fake Zalando Invoices (click to enlarge)</em></center>
+
+<p>The spam themes vary. But two years after the first appearance of Retefe, the well-known online shop <em>Zalando</em> still appears to be their favourite brand to abuse, pretending to be an invoice coming from Zalando Schweiz. Fortunately, Zalando did its job and is publishing an SPF (Sender Policy Framework) record in their DNS, demanding that any email using the sender <em>@zalando.ch</em> or <em>@service.zalando.ch</em> needs to come from the Zalando mail servers.</p>
+
+<p>If the receivers mail server is configured correctly and checking the SPF record of the sending domain name, the SPF check for spam mails pretending to come from Zalando Schweiz will fail and the receiving mail server therefore rejects such spam emails at the boarder or scores them appropriately with a high spam score.</p>
+
+<p>The spam emails usually come with a compressed attachment (ZIP), containing either a malicious RTF file with a <em>.cpl</em> file embedded or with an executable (<em>.exe</em>). If the user opens the attachment by executing the malicious <em>.cpl</em> or <em>.exe</em> file, Retefe is dropped to the victim's computer. While in 2014 Retefe was altering the DNS settings of the victims computer to use a rogue DNS server, the recent Retefe campaigns are taking advantage of a malicious <strong>web proxy server</strong>. To do so, Retefe will change the <strong>Proxy-PAC settings</strong> of the victim's machine in order to fetch a web proxy configuration from a rogue web server whenever the victim starts Internet Explorer.</p>
+
+<center><a href="assets/retefe_proxycfg_201504.png"><img src="assets/retefe_proxycfg_201504.png" alt="Retefe proxy configuration - Internet Explorer"/></a><br /><em>Altered proxy configuration by Retefe (click to enlarge)</em></center>
+
+
+<p>The URL, where Retefe fetches the web proxy configuration, varies in each campaign. In the most recent version from yesterday, the proxy configuration is being fetched from <em>swissprox.eu</em>, which is hosted at FDCservers.net in the US and obviously has been setup by the hackers themselves for the exclusive purpose of hosting malicious proxy PACs.</p>
+
+<code>https://swissprox.eu/iutrutviucric.js</code>
+
+<p>What is interesting with this proxy pac file is that the webserver is serving a different proxy configuration, depending on the <strong>Geo location</strong> of the victim's computer. This means that an infected computer, for example in Switzerland, will receive a different proxy configuration than an infected computer in Sweden. As we mentioned earlier in this blog post, Retefe is currently only targeting financial institutions in Switzerland, Austria, Sweden and Japan. If you try to fetch the proxy pac from a location, which does not match one of these countries, you will get an <em>empty</em> proxy configuration that looks like this:</p>
+
+<code>eval(function(p,a,c,k,e,d){e=function(c){return c};if(!''.replace(/^/,String)){while(c--){d[c]=k[c]||c}k=[function(e){return d[e]}];e=function(){return'\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c])}}return p}('1 0(2,3){4"5"}',6,6,'FindProxyForURL|function|url|host|return|DIRECT'.split('|'),0,{}))</code>
+
+<p>As seen in the example above, the proxy pac is <strong>obfuscated</strong>. So it isn't too obvious what it exactly does. However, it's not really complicated to deobfuscate it:</p>
+
+<code>function FindProxyForURL(url,host)<br />
+    {<br />
+    return"DIRECT"<br />
+}<br />
+</code>
+
+<p>If the victims computer is located in one of the countries targeted by Retefe, the proxy pac looks different: It contains a <em>target list</em> of financial institutions in the victims country, for which the web traffic should be redirected to a malicious web proxy (currently 11 targets for Sweden and 11 targets for Switzerland). If the victim will use a Retefe infected computer for ebanking, the web browser will connect to a <strong>rogue proxy server</strong> instead of the ebanking server of the bank. But there is one problem for the hackers: Since all financial institutions in Switzerland are using SSL encryption for their ebanking, the hackers had to find a solution to bypass that. For this purpose, the hackers are installing a rogue <em>Certificate Authority</em> (CA) to the trusted certificate store when infecting a computer:</p>
+
+<code>certutil -addstore -f -user ROOT C:\ProgramData\\cert529619.der</code>
+
+<p>... while <em>cert529619.der</em> is the malicious CA certificate dropped by Retefe. When a computer gets infected with Retefe, Windows will prompt the user with a <em>Security Warning</em>:</p>
+
+<center><a href="assets/retefe_cacertwarning_201504.png"><img src="assets/retefe_cacertwarning_201504.png" alt="Windows Security Warning" height="346" width="400"/></a><br /><em>Windows Security Warning when installing a CA certificate (click to enlarge)</em></center>
+
+<p>The rogue CA certificate pretends to come from VeriSign by using the same OU and CN as the legitimate CA certificate:</p>
+
+<center><a href="assets/retefe_certmgr_201504.png"><img src="assets/retefe_certmgr_201504.png" alt="Legit CA certificate Vs. rogue CA certificate used by Retefe" height="184" width="500"/></a><br /><em>Legit CA certificate Vs. rogue CA certificate used by Retefe (click to enlarge)</em></center>
+
+<p>The <strong>first</strong> CA certificate is the rogue one while the second is the legitimate one:</p>
+
+<center><a href="assets/retefe_cacert_201504.png"><img src="assets/retefe_cacert_201504.png" alt="Rogue CA certificate used by Retefe" height="431" width="350"/></a><br /><em>Fingerprint of the rogue CA certificate used by Retefe (click to enlarge)</em></center>
+
+<p>Using this technique, the hackers are able to issue <strong>any</strong> SSL certificate they like for any website and the victims web browser will accept it since the rogue CA is trusted by the victim's computer. The web browser is not going to display any security warning or similar to the victim. The victim will believe to be connected to the ebanking service of his bank.</p>
+
+<center><a href="assets/retefe_infections_201504.png"><img src="assets/retefe_infections_201504.png" alt="Number of Retefe infections in Switzerland"/></a><br /><em>Number of Retefe infections in Switzerland (click to enlarge)</em></center>
+
+<p>To summarize it: It hasn't much changed in the modus operandi of Retefe since 2014. Retefe is still using more or less the same themed spam emails to distribute itself in Switzerland. On the technical side, Refete is still using a rogue CA certificate to avoid SSL security warnings on an infected machine. However, Retefe moved away from altering the victim's computers DNS settings to using a malicious proxy configuration to redirect the victim to a fake ebanking portal.</p>
+
+<p>MELANI/GovCERT.ch closely monitors Retefe and takes appropriate actions together with the financial institutions and the ISPs in Switzerland in order to mitigate the threat as much as possible.</p>
+
+<p>MELANI/GovCERT.ch makes the following recommendation to mitigate the Retefe threat:</p>
+<ul>
+<li>Ensure that you use an up-to-date anti virus programand that the anti virus signatures are up-to-date</li>
+<li>Be very careful when adding CA certificates to the windows trusted certificate store</li>
+<li>Do not open any email attachments from suspicious senders</li>
+<li>Do not install any 3rd party apps on your mobile phone, even when you are requested to do so. Do <strong>always</strong> use the official App store (Apple App Store / Google Play Store)</li>
+<li>If you operate a mail server, make use of Sender Policy Framework (<a href="https://en.wikipedia.org/wiki/Sender_Policy_Framework" title="Sender Policy Framework">SPF</a>) and DomainKeys Identified Mail (<a href="http://www.dkim.org/" title="DomainKeys Identified Mail">DKIM</a>). Check all incoming emails for PSF and DKIM records. In order to prevent attackers from abusing your own domain name, publish an SPF record with your responsible mail servers that are allowed to send email on your behalf.</li>
+</ul>
+
+<p>If you suspect your computer is infected with Retefe:</p>
+<ul>
+<li>Check the proxy pac configuration of your web browser (in Internet Explorer: <em>Internet Options</em> -> <em>Connections</em> -> <em>LAN settings</em>)</li>
+<li>Check the DNS configuration of your computer (<em>Ethernet Properties</em> -> <em>Internet Protocol Version 4</em> -> <em>Properties</em>)</li>
+<li>Check your trusted certificate store (<em>run</em> -> <em>certmgr.msc</em> -> <em>Trusted Root Certification Authorities</em> -> <em>Certificates</em>)</li>
+</ul>
+
+<p>PS: When infecting a computer, Retefe fetches a <em>PNG</em> from a remote server using Windows PowerShell (in this case <em>https://www.easycounter.com/counter.php?mvtyiortiyoxirt</em>). This appears to be used for statistical purpose by the hackers. If you visit this URL through a web browser, you will see the number of computers Retefe has infected in this campaign (which is currently <strong>58</strong> on 1st May 2015).</p>
+
+<p>Sample MD5: 089dbefc547cb23ae99d3cc3b0f52f53<br />Sample SHA256: 5a937c60cf4b33c1e0635952813022d6befaece4b9d71b5010016d3f21d9ae35</p>

@@ -1,0 +1,44 @@
+---
+title: "Outdate WordPress: Thousands of websites in Switzerland are vulnerable"
+author: GovCERT.ch
+draft: false
+dateadded: 2015-06-02 09:23:29
+lastmod: 2015-06-08 10:52:17
+date: 2015-06-08 10:48:00
+aliases: 
+  - 8/outdate-wordpress-thousands-of-websites-in-switzerland-are-vulnerable
+---
+
+<p>The internet has grown very fast in the past 15 years. Thousands of new websites are going online every day. According to <a href="http://news.netcraft.com/archives/2015/05/19/may-2015-web-server-survey.html">Netcraft</a>, there are currently more than 850'000'000 active websites in the internet (May 2015). One of the reasons why the number of websites has grown that much is the use of content management systems (CMS), for example WordPress, Typo3, Joomla and Durpal. By using a CMS, you can easily publish content in the internet without needing IT knowledge. In addition, you have a vast amount of plugins available for CMS allowing you to customize your website in the way you want. Hence, content management systems (CMS) are being used by many small and medium enterprises (SME) but also by hobby webmasters which want to have a website for e.g. their sport club.</p>
+
+<p>While CMS are something great, they are also a valuable target for hackers. In April 2015, we <a href="https://twitter.com/GovCERT_CH/status/592778475787915264" title="GovCERT.ch on Twitter">tweeted</a> about a vulnerability in WordPress that allows a miscreant to launch a Cross-Site-Scripting attack (XSS) against any website running a vulnerable version of WordPress by posting a comment with malicious java script in it (CVE-2015-3440). On the same day the vulnerability has been made <a href="http://klikki.fi/adv/wordpress2.html">public</a>, WordPress released a security update (<a href="https://wordpress.org/news/2015/04/wordpress-4-2-1/">WP 4.2.1</a>) to fix it.</p>
+
+<p>Unfortunately, the security fix didn't last long. On May 6th 2015, another vulnerability (CVE-2015-3429) has been made public which allows an attacker to launch a cross-site-scripting attack (XSS) against websites running WordPress. According to Sucuri, the vulnerability has already been exploited <a href="https://blog.sucuri.net/2015/05/jetpack-and-twentyfifteen-vulnerable-to-dom-based-xss.html">in the wild</a> before WordPress was even able to release a security update. The vulnerability also exists in JetPack, a popular WordPress plugin that has, according to <a href="https://wordpress.org/plugins/jetpack/">WordPress.org</a>, more than <strong>one million active installs</strong>. This vulnerability has been revealed on May 6th, 2015. WordPress released a <a href="https://wordpress.org/news/2015/05/wordpress-4-2-2/">security update</a> on May 7th 2015 to fix it. Today, one month later, thousands of websites in Switzerland are still unpatched and vulnerable.</p>
+
+<p>According to <a href="https://www.nic.ch/reg/cm/wcm-page/statistics/?lid=de">nic.ch</a>, there have been 1'939'115 domain names registered within the swiss name space (ccTLD .ch) by end of March 2015. At least 124'000 of those (~6.4%) are running WordPress. Checking the WP version of these websites, we see that more than <strong>70% of all .ch websites that are running WordPress</strong> appear to use an outdated version of WordPress and are therefore very likely <strong>vulnerable</strong> to the attacks described above.</p>
+
+<center><a href="assets/vulnerable_wordpress_sites_ch.png"><img src="assets/vulnerable_wordpress_sites_ch.png" alt=".ch Websites running Wordpress" /></a><br /><em>Amount of vulnerable Vs. non-vulnerable websites in .ch name space running WordPress (click to enlarge)</em></center>
+
+<p>Breaking it down to the CVE (CVE-2015-3440 - Stored XSS vulnerability in WP, CVE-2015-3429 - XSS vulnerability in WP and JetPack), the situation looks as follow:</p>
+
+<center><a href="assets/cve_wp_ch.png"><img src="assets/cve_wp_ch.png" alt="CVE breakdown on .ch Websites running WordPress"/></a><br /><em>CVE breakdown on .ch Websites running WordPress (click to enlarge)</em></center>
+
+<p>These statistics are based on the WordPress version used. Further investigation would be necessary in order to determine if these websites are vulnerable or not (or whether they are e.g. protected by Web Application Firewalls that would block these kind of attacks). However, it is very likely that they are at risk, since they are using an outdated version of WordPress that is known to be vulnerable to these attacks.</p>
+
+<p>Based on the reports GovCERT.ch received from partners, we can say that more than <strong>5'000</strong> websites are confirmed to be vulnerable to CVE-2015-3440. That is nearly 5 times more than the number of vulnerable Magento installations in Switzerland we have <a href="http://www.govcert.admin.ch/blog/4/critical-vulnerability-in-magento-many-swiss-websites-are-still-vulnerable" title="Critical vulnerability in Magento: Many Swiss websites are still vulnerable">reported</a> in April 2015. Today, GovCERT.ch has started the notification process for these websites by informing the responsible hosting providers about affected customers running an outdated (vulnerable) version of WordPress.</p>
+
+<p>Unfortunately, we believe that this is just the tip of the iceberg. As stated earlier in our blog post, there are several other CMS available beside WordPress. We are assuming that the situation doesn't look better there either. So the question that remains is: Why are there so many websites out there running a vulnerable version of a CMS? One explanation would be that CMS are victims of their own success: A CMS makes it easy for everyone to publish websites on the internet, even for people who have no knowledge in IT. They likely do not know that they need to patch their CMS as they are (hopefully) already used to on their Desktop PC. Like a car that needs a frequent check, you should check if the CMS you are using is up to date and patched.</p>
+
+<p>If you are running a content management system (CMS) such as WordPress, Typo3, Joomla or Durpal, we highly recommend you to make sure that you are running the most recent version. Further tips and measures to secure your content management systems (CMS) can be found on the MELANI website:</p>
+
+<p><strong>Measures to secure Content Management Systems (English)</strong><br />
+<a href="http://www.melani.admin.ch/dienstleistungen/00132/01556/index.html?lang=en" title="Measures to secure Content Management Systems (CMS)">http://www.melani.admin.ch/dienstleistungen/00132/01556/index.html?lang=en</a></p>
+
+<p><strong>Massnahmen zum Schutz von Content Management Systemen (Deutsch)</strong><br />
+<a href="http://www.melani.admin.ch/dienstleistungen/00132/01556/index.html?lang=de" title="Massnahmen zum Schutz von Content Management Systemen">http://www.melani.admin.ch/dienstleistungen/00132/01556/index.html?lang=de</a></p>
+
+<p><strong>Mesures de prévention pour les systèmes de gestion de contenu (French)</strong><br />
+<a href="http://www.melani.admin.ch/dienstleistungen/00132/01556/index.html?lang=fr" title="Mesures de prévention pour les systèmes de gestion de contenu (CMS)">http://www.melani.admin.ch/dienstleistungen/00132/01556/index.html?lang=fr</a></p>
+
+<p><strong>Misure per contribuire alla sicurezza dei sistemi di gestione dei contenuti (Italian)</strong><br />
+<a href="http://www.melani.admin.ch/dienstleistungen/00132/01556/index.html?lang=it" title="Misure per contribuire alla sicurezza dei sistemi di gestione dei contenuti (CMS)">http://www.melani.admin.ch/dienstleistungen/00132/01556/index.html?lang=it</a></p>

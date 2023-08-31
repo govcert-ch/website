@@ -1,0 +1,85 @@
+{{$hl := .highlight}}
+{{$year := .year }}
+<div class="col-sm-12 col-md-3 no-left-padding">
+  <div class="col-sm-12 drilldown">
+    <a href="#collapseSubNav01" data-toggle="collapse" class="collapsed visible-xs" role="tab" aria-selected="false"
+      aria-expanded="false" id="ui-collapse-625">Recent Blog Posts</a>
+    <div class="drilldown-container" style="width: auto; height: auto;" >
+      <nav class="nav-page-list" role="navigation" id="secondary-navigation" style="margin-left: 0px;">
+        <ul>
+          <li class="list-emphasis">
+            <span>Recent Blog Posts</span>
+            <ul>
+              {{ range first 3 (where $.context.Site.RegularPages "Section" "blog") }}
+                {{ if eq .Permalink $hl}}
+                <li class="active" aria-selected="true"><span>{{.Title}}</span></li>
+                {{ else }}
+                <li><a href="{{.RelPermalink}}">{{.Title}}</a></li>
+                {{ end }}
+              {{ end }}
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+  <div class="col-sm-12 drilldown">
+    <a href="#collapseSubNav02" data-toggle="collapse" class="collapsed visible-xs" role="tab" aria-selected="false"
+      aria-expanded="false" id="ui-collapse-462">Blog Archive by Year</a>
+    <div class="drilldown-container" style="width: auto; height: auto;" >
+      <nav class="nav-page-list" role="navigation" id="secondary-navigation" style="margin-left: 0px;">
+        <ul>
+          <li class="list-emphasis">
+            <span>Blog Archive by Year</span>
+            <ul>
+              {{ range (where $.context.Site.RegularPages "Section" "blog").GroupByDate "2006" }}
+              {{ if eq .Key $year }}
+              <li class="active list-sub" aria-selected="true">
+              {{ else }}
+              <li class="list-sub">
+              {{ end }}
+                <a href="#">{{.Key}}</a>
+                <nav class="drilldown-sub" aria-expanded="false">
+                  <a href="#" class="icon icon--before icon--less drilldown-back"><span class="sr-only">Back to </span>Blog Archive</a>
+                  <ul>
+                    {{ range .Pages}}
+                    {{ if eq .Permalink $hl }}
+                    <li class="active list-sub" aria-selected="true">{{.Title}}</li>
+                    {{ else }}
+                    <li><a href="{{.RelPermalink}}">{{.Title}}</a></li>
+                    {{ end }}
+                    {{ end }}
+                  </ul>
+                </nav>
+              </li>
+              {{end}}
+              {{ if eq "all" $hl}}
+                <li class="active" aria-selected="true"><span>Show all posts<span class="sr-only"> Show all posts</span></span></li>
+              {{ else }}
+                <li><a href="/blog/">Show all posts</a></li>
+              {{ end }}
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  <div class="col-sm-12 drilldown">
+    <a href="#collapseSubNav03" data-toggle="collapse" class="collapsed visible-xs" role="tab" aria-selected="false"
+      aria-expanded="false" id="ui-collapse-832">RSS Feeds</a>
+    <div class="drilldown-container" style="width: auto; height: auto;" id="">
+      <nav class="nav-page-list" role="navigation" id="secondary-navigation" style="margin-left: 0px;">
+        <ul>
+          <!-- the .list-emphasis class is optionnal -->
+          <li class="list-emphasis">
+            <span>RSS Feeds</span>
+            <ul>
+              <li><a href="/blog/rss.xml">Blog RSS Feed</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>

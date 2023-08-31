@@ -1,0 +1,65 @@
+---
+title: "Swiss Advertising network compromised and distributing a Trojan"
+author: GovCERT.ch
+draft: false
+dateadded: 2015-09-21 09:22:18
+lastmod: 2015-09-24 07:16:28
+date: 2015-09-22 07:30:00
+aliases: 
+  - 13/swiss-advertising-network-compromised-and-distributing-a-trojan
+---
+
+<p>On September 11, 2015, MELANI / GovCERT.ch got informed by security researcher <a href="http://malware.dontneedcoffee.com/">Kafeine</a> about a popular advertising network in Switzerland that obviously got compromised by cybercriminals, leading to an exploit kit called <a href="http://malware.dontneedcoffee.com/2015/05/another-look-at-niteris-post.html">Niteris</a>.</p>
+
+<h2>What are Exploit Kits?</h2>
+<p>Exploit kits are very popular among cybercriminals to infect innocent internet users, using <em>malvertising campaigns</em>. To do so, cybercriminals compromise websites and inject malicious Java-Script code or an iframe that leads to a 3rd party site hosting an Exploit Kit (EK). Such 3rd party sites are often operated by the cybercriminals themselves. Once a internet users visits a compromised website, the web browser will automatically load the malicious Java Script from the mentioned 3rd party websites. This code will then try to exploit well known software vulnerabilities in either the web browser itself or web browser extensions, such as Adobe Flash Player, Adobe Reader or Java to install malware on the victims machine. What makes this attack vector more sneaky than the traditional infection vector via spam email is the fact that the visitor of the infected website will very likely not notice that he visited a compromised website or that he actually got infected with malware. The visitor will <strong>not</strong> get any prompt from his web browser, nor does he have to approve or confirm any software installation (since the attacker makes use of a software vulnerability to install the malware, which is something completely different to a traditional software installation where you likely have to approve and confirm a system or configuration change). If the affected Ad network is rather popular, the hacker will be able to serve his malicious code to thousands or even millions of visitors and hence can possibly infect a large amount of computers.</p>
+
+<p>While most malvertising campaigns are targeting common websites (for example: your hairdresser's website from around the corner, which is likely running an <a href="http://www.govcert.admin.ch/blog/8/outdate-wordpress-thousands-of-websites-in-switzerland-are-vulnerable">outdated CMS version</a> and can hence get compromised easily), advertising networks are also at risk of getting compromised. Compromising an Ad network has actually one big benefit for a cybercriminal: He only has to compromise one server that belongs to an Ad-network, and his malicious code will be automatically populated to any website that a customer of that particular Ad networks service.</p>
+
+<h2>Popular Swiss Advertising Network got compromised</h2>
+<p>The malvertising campaign we investigated has compromised a popular advertising network in Switzerland with hundreds of thousands of possible victims. While investigating the incident, we noticed that the Exploit Kit that was injected into the Ad network was only serving malware when the visitor had a German or French User-Agent (HTTP Header <em>Accept-Language</em>). Once a visitor visited a website that is customer of the compromised Ad network, the Exploit Kit automatically tried to exploit vulnerabilities in Internet Explorer (e.g. CVE-2014-6332), Firefox (e.g. CVE-2013-1710), Java (e.g. CVE-2013-2465) or Adobe Flash (e.g. CVE-2015-5119) to install malware on the victims computer. It turned out that the payload (malware) that was being dropped is Gozi ISFB, a sophisticated ebanking trojan that is already around for many years. There are several active Gozi campaigns, operated by different groups and targeting financial institutions all over the world.</p>
+
+<p>The Gozi campaign that was involved in this particular incident is mainly targeting customers of Swiss financial institutions. We could also identify a couple of foreign targets. However, it appears to be clear that the observed Gozi campaign has a strong focus on Switzerland:</p>
+
+<ul>
+<li>5 financial institutions in Switzerland</li>
+<li>2 financial institutions in Thailand</li>
+</ul>
+
+<p>For communicating with the botnet herder, this Gozi campaign is using a Domain-Name Generation Algorithm (DGA), while using the <em>robots.txt</em> from z1.zedo.com (http://z1.zedo.com/robots.txt) as <em>seed</em>. By this, Gozi is able to calculate a list of botnet C&C domains that the bot should contact to communicate with the botnet herder and to receive further instructions (tasks) and configuration updates. These DGA domain names are valid for 3 months. A bot may receive further tasks from the botnet herder, such as bot updates, configuration updates or plugins. During our analysis, we noticed that the malware downloads an additional VNC plugin that allows the attacker to access an infected computer remotely. Please note that the site z1.zedo.com itself is not compromised by the Gozi group and to our knowledge not vulnerable in any way; this textfile is completely legitimate and just abused by the trojan as a common seed to calculate domains. Visiting this site itself does not impose any risk concerning this issue. Other variants of Gozi use similar links of different webpages containing texts that don't change often.</p>
+
+<p>On Friday 18 September 2015, the botnet herder started to send out uninstall commands (<em>SELF_DELETE</em>) to any infected computer (bot) that is contacting the botnet controller (C&C). We don't know the intetion behind this action, but we can speculate that the botnet herder either noticed that the we caught his operation or that he actually made enough money, so he decided to shutdown the botnet.</p>
+
+<h2>Actions took by MELANI</h2>
+<p>MELANI / GovCERT.ch did inform the affected financial institutions in Switzerland that are targeted by this Gozi campaign. We also inform internet services providers (ISPs) in Switzerland about potential Gozi infections within their network.</p>
+
+<h2>Indicator of Compromise</h2>
+<p>The following domain names and IP address can be used as <em>indicator of compromise</em> (IOCs) to spot infected computers in a network:</p>
+
+<p><strong>Niteris Exploit Kit</strong><br />
+mail.googlenatservices.com<br />
+cdn.googlenatservices.com<br />
+ads.googlenatservices.com<br />
+148.251.219.18</p>
+
+<p><strong>Gozi ISFB botnet C&C (DGA domains)</strong><br />
+clientallowjallow.mn<br />
+googlegooallowallowagent.mn<br />
+allowclientallowalbarb.mn<br />
+alallowjscheresa.me<br />
+agentclientclientallowal.mn<br />
+userclientjscmediap.me<br />
+saclientallowclient.mn<br />
+jscofficermediapartners.me<br />
+amediapartnersagentagent.me<br /></p>
+
+<p><strong>Gozi ISFB botnet C&C</strong><br />
+94.242.254.208</p>
+
+<p><strong>VNC backconnect server</strong><br />
+136.243.13.106<br />
+</p>
+
+<p><strong>Gozi webinject server</strong><br />
+95.211.188.218<br />
+51.254.51.97<br /></p>

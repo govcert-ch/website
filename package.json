@@ -1,0 +1,34 @@
+{
+  "name": "govcert-website",
+  "version": "0.1.0",
+  "description": "Source files for the GovCERT.ch website",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://10.0.10.125/govcert/govcert-website.git"
+  },
+  "keywords": [
+    "hugo",
+    "website"
+  ],
+  "author": "GovCERT.ch",
+  "license": "ISC",
+  "dependencies": {
+    "bootstrap": "^3.4.1",
+    "child": "0.0.3",
+    "jquery": "^3.5.1",
+    "jquery-drilldown": "^1.1.2",
+    "swiss-styleguide": "^3.0.0"
+  },
+  "devDependencies": {
+    "fancy-log": "^1.3.3",
+    "gulp": "^4.0.2",
+    "gulp-clean": "^0.4.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-replace": "^1.1.3",
+    "gulp-server-livereload": "^1.9.2"
+  }
+}

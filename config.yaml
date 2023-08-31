@@ -1,0 +1,25 @@
+theme: govcert-ch
+baseURL: https://www.govcert.ch/
+languageCode: en-us
+title: GovCERT.ch - Swiss Government Computer Emergency Response Team
+description: Website of the Swiss Government Computer Emergency Response Team (GovCERT.ch)
+contentdir: content
+buildDrafts: true
+buildFuture: true
+permalinks:
+  blog: /blog/:slug
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+  highlight:
+    style: monokailight
+outputs:
+  home: ["HTML","RSS"]
+mediaTypes:
+  "application/atom+xml":
+    suffixes: ["xml"]
+outputFormats:
+  RSS:
+    mediatype: "application/atom+xml"
+    baseName: "rss"

@@ -1,0 +1,55 @@
+{{ define "main" }}
+<div class="row">
+  <div class="col-lg-9 col-md-9 col-sm-12">
+    <h1>{{.Title}}</h1>
+    <p>{{.Content}}</p>
+    {{ if .Params.links }}
+    {{ range .Params.links}}
+    <div>
+      <p>
+        <a class="icon icon--before icon--pdf"
+          href="/downloads/whitepapers/{{.filename}}"
+          title="GovCERT.ch Whitepaper: {{.title}}">{{.title}}</a>
+      </p>
+      <p>
+        <small class="hidden-print">
+          <span class="text-dimmed">Filesize: {{ .filesize }} | Type: {{upper .filetype }} | Language: {{.language}}</span>
+        </small>
+      </p>
+    </div>
+    {{ end }}
+    {{ else }}
+    <div>
+      <p>
+        <a class="icon icon--before icon--pdf"
+          href="/downloads/whitepapers/{{.Params.filename}}"
+          title="GovCERT.ch Whitepaper: {{.Title}}">{{.Title}}</a>
+      </p>
+      <p>
+        <small class="hidden-print">
+          <span class="text-dimmed">Published on {{ dateFormat "January 2, 2006" .Date }} | Filesize: {{ .Params.filesize }} | Type: {{upper .Params.filetype }} <br>Language: {{.Params.language}} | Version: {{.Params.version}} 
+          {{ with .Params.lastmodified }}
+            | Last modified: {{"January 2, 2006" .}}
+          {{ end }}
+          </span>
+        </small>
+      </p>
+    </div>
+    {{ end }}
+    <small class="hidden-print">
+      <p><small class="hidden-print"><a href="#" class="icon icon--before icon--power">Back to top</a></small></p>
+    </small>
+
+  </div>
+  <div class="col-lg-3 col-md-3 col-sm-12">
+    <div class="bordered">
+      <div class="rss well well-white">
+        <h4 class="icon icon--before icon--rss">RSS</h4>
+        <ul class="list-unstyled">
+          <li><a href="/whitepapers/rss.xml" title="Whitepapers RSS Feed">Whitepapers RSS Feed</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{{ end }}

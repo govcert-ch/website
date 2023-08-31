@@ -1,0 +1,30 @@
+---
+title: "Taking a Look at Nymaim"
+author: GovCERT.ch
+draft: false
+dateadded: 2017-03-03 10:41:26
+lastmod: 2017-03-03 10:58:48
+date: 2017-03-03 10:50:00
+aliases: 
+  - 29/taking-a-look-at-nymaim
+---
+
+<p>Nymaim is active worldwide since at least 2013 and is also responsible for many infections in Switzerland. Sinkhole Data shows that Nymaim is responsible for about 2% of infected de- vices 1 in Switzerland that hit sinkholes the last few days. </p>
+
+<p>When we looked at the Nymaim trojan in January, we were stunned by their powerful code obfuscation techniques and wrote an IDAPython script to deobfuscate the code using the debugger engine. Later we found similar tools already available in the public to do this using code emulation. Nevertheless, we decided to publish a paper about our approach, as it is a very nice case study to demonstrate how debugger orchestration works in IDAPython, and to explain different disassembly strategies that can be used. Instrumenting the debugger means to set breakpoints in scripts and to run the code in pieces, which has a very dynamic and fascinating impact on the IDA GUI:</p>
+
+<center><a href="assets/nymaim_ida.gif"><img src="assets/nymaim_ida.gif" alt="IDA debugger in action"/></a><br /><em>IDA debugger in actione (click to enlarge)</em></center>
+<br />
+
+<p>In addition, the Unicorn engine was applied as an alternative to the debugger. Finally, the deobfuscation of Windows API calls using the debugger approach is described - a problem where emulation techniques usually doesn't work due to the lack of a full operating system environment. Some generalizations of the deobfuscation algorithm are discussed to be prepared for potential further developments of the obfuscation, and a few unusual locations are depicted where the obfuscation was applied on non-constant input parameters.</p>
+
+<p>Nymaim is active worldwide since at least 2013 and is also responsible for many infections in Switzerland. We recorded the IP addresses that one of the current C&C domains (olseneinfeis.com) revolved to over the past weeks. The domain name is hosted on a fast flux botnet; the IP addresses are encrypted, and one of them acts as a checksum for the other ones (more about this can be found <a href="https://www.botconf.eu/wp-content/uploads/2016/11/PR18-Nymaim-ORTEGA.pdf">here</a>). We found nearly 5'000 valid and decrypted IP addresses, after having removed the checksum IP; These are mostly DSL lines, so we suspect a botnet behind them. The following picture shows the distribution of these IP addresses by country:</p>
+<center><a href="assets/nymaim_geo.png"><img src="assets/nymaim_geo.png" alt="Nymaim's FastFlux botnet"/></a><br /><em>Nymaim's FastFlux botnet (click to enlarge)</em></center>
+<br />
+
+<p>Our whitepaper can be downloaded here:</p>
+<ul>
+<li><a href="https://www.govcert.admin.ch/whitepapers/2/scripting-ida-debugger-to-deobfuscate-nymaim" title="Scripting IDA Debugger to Deobfuscate Nymaim">Scripting IDA Debugger to Deobfuscate Nymaim</a>
+</ul>
+<br />
+<br />

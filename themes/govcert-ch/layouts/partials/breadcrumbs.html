@@ -1,0 +1,36 @@
+{{ $url := urls.Parse .permalink}}
+{{ $crumbs := split (trim $url.Path "/") "/" }}
+{{ $title := .title }}
+{{ if ne $url.Path "/" }}
+<div class="container-fluid hidden-xs">
+  <div class="row">
+    <div class="col-sm-12">
+      <h2 id="br1" class="hidden">Breadcrumbs</h2>
+      <ol class="breadcrumb" role="navigation" aria-labelledby="br1">
+        <li><a href="/">Home</a></li>
+        {{ range $index,$crumb := $crumbs }}
+          {{ if lt (add $index 1) (len $crumbs) }}
+          <li>
+          {{ else }}
+          <li class="active" aria-selected="true" aria-label="current page">
+          {{ end }}
+          <span class="icon icon--greater"></span>
+          {{$path := path.Join (first (add $index 1) $crumbs)}}
+          {{ if lt (add $index 1) (len $crumbs) }}
+          <a href="{{ $path | absURL }}/">{{$crumb | humanize }}</a>
+          {{else}}
+            {{ if $title }}
+              {{ $title | humanize }}
+            {{ else }}
+              {{$crumb | humanize }}
+            {{ end }}
+          {{ end }}
+        </li>
+
+        {{ end }}
+      </ol>
+        {{$path := "/" }}
+    </div>
+  </div>
+</div>
+{{end}}

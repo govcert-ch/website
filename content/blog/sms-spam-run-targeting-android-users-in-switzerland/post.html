@@ -1,0 +1,45 @@
+---
+title: "SMS spam run targeting Android Users in Switzerland"
+author: GovCERT.ch
+draft: false
+dateadded: 2016-07-13 13:39:23
+lastmod: 2016-07-15 10:16:31
+date: 2016-07-13 14:00:00
+aliases: 
+  - 24/sms-spam-run-targeting-android-users-in-switzerland
+---
+
+<p>MELANI / GovCERT.ch received several reports today about malicious SMS that have been sent to Swiss mobile numbers. The SMS is written in German and claims to come from the Swiss Post. But in fact, the SMS has been sent by hackers with the aim to infect Smartphones in Switzerland with a Trojan horse.</p>
+
+<center><a href="assets/android_malware_sms.png"><img src="assets/android_malware_sms.png" alt="Malicious SMS"/></a><br /><em>Malicious SMS pretends to come from the Swiss Post (click to enlarge)</em></center>
+
+<p>The SMS contains a link to a website. If the user clicks on the link in the SMS, he will get redirected to a hijacked website that hosts an App that installs malware on the victims Smartphone. As the served file is an Android application package (APK), only Android users are affected by this threat.</p>
+
+<p>By default, Google does not allow Apps from 3rd parties (such as 3rd party App stores or from the internet) to be installed. However, the user has the possibility of allowing the installation of 3rd party Apps by changing the Android Security settings. In most cases, users do not change theses settings, so common Android users should be safe. Yet there were some articles in some Swiss newspapers this week that showed its readers how to enable the installation of Android Apps from 3rd party (aka “unknown sources”) in order to install the new Nintendo game <em>Pokemon GO</em>, as the App isn't in the Swiss version of the Google Play Store yet. Even before the launch of the game in Switzerland, the App went viral and obviously many Android users in Switzerland wanted to access the game before the launch of the App in the Swiss App store. As a result of this, some Android users may followed the instructions of the Swiss news papers and have enabled the installation of Apps from 3rd parties, making themselves vulnerable to this type of attack.</p>
+
+<center><a href="assets/malicious_swisspost_app.png"><img src="assets/malicious_swisspost_app.png" alt="Malicious Swiss Post Android App"/></a><br /><em>Malicious Swiss Post Android App (click to enlarge)</em></center>
+
+<p>The App requests permission to erase all data on the victims phone (see screenshot above). In addition, it calls out to a botnet command&control server (C&C) in order to receive further commands from the attackers. According to FireEye, the App is part of a larger <a href="https://www.fireeye.com/blog/threat-research/2016/06/latest-android-overlay-malware-spreading-in-europe.html" title="The Latest Android Overlay Malware Spreading via SMS Phishing in Europe">cybercrime operation</a> with the aim of stealing login credentials of popular Apps such as Uber, Viber and Facebook (phishing / Smishing).</p>
+
+<p>In the last SMS spam campaign we have observed in Switzerland a few weeks ago, we noticed that the malicious App has been downloaded more than <strong>15'000 times</strong>.</p>
+
+<p>In general, we highly recommend Android users to <strong>disable</strong> the installation of 3rd party Apps from unknown sources. To ensure that the installation of 3rd party Apps is disabled, go to <em>settings</em> -> <em>Security</em> on your Android device and make sure that the option <me>Unknown Sources</em> is disabled:</p>
+
+<center><a href="assets/android_unknown_sources.png"><img src="assets/android_unknown_sources.png" height="581" width="400" alt="Malicious Swiss Post Android App"/></a><br /><em>Malicious Swiss Post Android App (click to enlarge)</em></center>
+
+<p>We recommend to never change this setting, even when you are instructed by to do so (as strangers may try to convince you to do so in order to place malware on your smartphone).</p>
+
+<h2>Indicator of Compromise</h2>
+
+<p>Android APK download URL:</p>
+<code>
+hXXp://ieej.lv/swissp<br />
+hXXp://riorancholeakletter.com/sp.apk</code>
+
+<p>Android APK (malware):</p>
+<code>Filename: sp.apk<br />
+MD5 hash: c121a1ae8a4ee564fd6bd079ad5d3373</code></p>
+
+<p>Android malware botnet C&C:</p>
+<code>hXXp://85.93.5.146/?action=command</code>
+

@@ -1,0 +1,177 @@
+---
+title: "When Mirai meets Ranbyus"
+author: GovCERT.ch
+draft: false
+dateadded: 2016-12-15 09:14:24
+lastmod: 2016-12-15 10:12:11
+date: 2016-12-15 09:30:00
+aliases: 
+  - 25/when-mirai-meets-ranbyus
+---
+
+<p>When we read the <a href="http://blog.netlab.360.com/new-mirai-variant-with-dga/" title="Now Mirai Has DGA Feature Built in">blog post</a> about Mirai’s new DGA feature, a recommended  read, we decided to try to re-implement its DGA. This was quite a challenge, as we’re not too familiar with the MIPS architecture and could not easily find any x86 sample with DGA.</p>
+
+<p>The main DGA generation loop did not look too difficult to implement. Here is a copy of it, with some register renaming we did to facilitate a Python implementation:</p>
+
+<center><a href="assets/mirai_dga.png"><img src="assets/mirai_dga.png" height="792" width="500" alt="Mirai DGA loop"/></a><br /><em>Mirai DGA loop(click to enlarge)</em></center>
+
+<p>We were initially surprised by the observation that, while we see <em>0x61</em> (a lowercase ‘a’) added at the end, we don’t seem to see any modulo 26 operation, so we would expect the base name to contain non-printable characters. Nevertheless, we tried to mimic the code instruction by instruction in Python; after repeatedly fixing typos, we came up with the following abomination of code:</p>
+
+<pre>
+<code>def calcDGA(day,month,year,seed=0):
+    msk32 = 0xffffffff
+    yearVal = (year*8) & msk32
+    yearValB = 0x3ffff00 # lowest byte is irrelevant
+    monValB = 0x51eb851f # “|month” can be ignored
+    msk1 = 0xfffffff0
+    msk2 = 0xfffffffe
+    res = ""
+    
+    for i in xrange(12):
+        daySeed = day ^ seed
+        yearVal -= year
+        yearVal &= msk32
+        monMask = month & msk2
+        month2 = (month * 4) & msk32
+        yearVal ^=  year
+        month2 ^=  month
+        dayMask = day & 0x1fff
+        month = (monMask << 4) & msk32
+        monVal = year & msk1
+        monMask = (monMask*2) & msk32
+        daySeed = (daySeed*4) & msk32
+        month = (month-monMask) & msk32
+        monVal = (monVal << 17) & msk32
+        yearVal = yearVal >> 11
+        dayMask  ^=  daySeed
+        month2 >>= 8
+        year = monVal ^ yearVal
+        dayMask = (dayMask<<4) & msk32
+        yearVal = (day >> 15) & msk32
+        month ^=  month2
+        day = yearVal ^ dayMask        
+        monMask = year ^ month ^ day
+        dayMask = ((monMask * monValB) >> 32) & msk32
+        dayMask >>= 3    
+        yearVal = ((seed*8 + day) << 8) & yearValB
+        monVal = seed >> 6
+        seed = monVal ^ yearVal
+        monVal = (dayMask << 3) & msk32
+        yearVal = (dayMask << 5) & msk32
+        yearVal = (yearVal - monVal + dayMask) & msk32
+        monMask = (monMask - yearVal) & msk32
+        monMask = (monMask + 0x61) & msk32
+        res += chr(monMask & 0xff)
+        yearVal = (year * 8) & msk32
+    
+    suffix = ""
+    if day&1 == 0:
+        suffix = "online"
+    if day%3 == 0:
+        suffix = "tech"
+    if day%4 == 0:
+        suffix = "support"
+    return res,suffix
+</code>
+</pre>
+
+<p>Yes, this re-implementation is ugly – more than ugly. But surprisingly it produces printable output, as you can easily try it out yourself. While playing with it, we noticed that the letter ‘z’ seems to be absent –  only 25 letters of the possible 26 appear. This already triggered some memories, but unfortunately we did not follow them yet.
+So, where hides the mapping to lowercase letters? The solution lies in the variable monValB, which contains 0x51eb851f, approximating 8/25 modulo 32 (0x51eb851f*25 = 0x8’0000’0007); the subsequent division by 8 (right-shifting of 3 bits) results in a division by 25 (stored in dayMask) – the compiler seems to avoid actual division instructions.  Just after that, dayMask is again multiplied by 25, which is done by shifting it left 5 bits (multiplication with 32), shifting the same value once more by 3 bits (multiplication with 8), taking the difference (multiplication with 32-8=24), and finally adding dayMask once more (multiplication with 25). So, the compiler optimizes multiplications as well. After a final subtraction, that results in a “modulo 25”, and then 0x61 is added – note that “z” can never be produced this way, as suspected. Mystery solved.</p>
+
+<p>Actually we see a similar trick later on in the code, the multiplication with 0xAAAAAAAB is in fact an approximation of 2/3  and used to calculate the modulo 3 value in the TLD selection code.</p>
+
+<p>Now we tried to beautify the code, and after several copy and paste steps in Python, we reached the following:</p>
+
+<pre>
+<code>def calcDGA(day,month,year,seed=0):
+    msk32 = 0xffffffff
+    
+    monVal = 0x51eb0000 + month
+    yearVal = (year*8) & msk32
+    yearValB = 0x3ffff00
+    
+    msk1 = 0xfffffff0
+    msk2 = 0xfffffffe
+    
+    res = ""
+    
+    for i in xrange(12):
+        yearVal = (((yearVal - year) ^ year) & msk32) >> 11
+        year = (((year & msk1) << 17) & msk32)  ^ yearVal
+        dayMask = (((day & 0x1fff) ^ (((day ^ seed)*4) & msk32))<<4)&msk32
+        yearVal = (day >> 15) & msk32
+        month =  ((14*(month&msk2))&msk32)^((month^((month*4)&msk32)) >> 8)
+        day = yearVal ^ dayMask
+        monMask = year ^ month ^ day
+        yearVal = ((seed*8 + day) << 8) & yearValB
+        monVal = seed >> 6
+        seed = monVal ^ yearVal
+        res += chr(monMask % 25 + 0x61)
+        yearVal = (year * 8) & msk32
+    
+    suffix = ""    
+    if day%2 == 0:
+        suffix = "online"
+    if day%3 == 0:
+        suffix = "tech"
+    if day%4 == 0:
+        suffix = "support"
+    return res,suffix
+</code>
+</pre>
+
+<p>Which still works fine. But during the modification of this code, it started to look more and more like a DGA we already knew – especially after we saw the multiplication with 14. Actually, it looked very similar to the <a href="https://www.johannesbader.ch/2015/05/the-dga-of-ranbyus/" title="The DGA of Ranbyus">Ranbyus DGA</a>:</p>
+
+<pre>
+<code>FOR i = 0 TO 13
+     day = (day >> 15) ^ 16 * (day & 0x1FFF ^ 4 * (seed ^ day))
+     year = ((year & 0xFFFFFFF0) << 17) ^ ((year ^ (7 * year)) >> 11)
+     month = 14 * (month & 0xFFFFFFFE) ^ ((month ^ (4 * month)) >> 8)
+     seed = (seed >> 6) ^ ((day + 8 * seed) << 8) & 0x3FFFF00
+     domain[i] = ((day ^ month ^ year) % 25) + 'a'
+</code>
+</pre>
+
+<p>We gave it a shot, and tried the <a href="https://github.com/baderj/domain_generation_algorithms/blob/master/ranbyus/may/dga.c" title="baderj/domain_generation_algorithms">C code</a>. The only slight modifications required were to change the length of the base names from 14 down to 12, and the different selection of TLDs. Also, dga.c produces 30 domains for one day, while Mirai only uses the first one of them. Anyway, the code indeed produces the same base names:</p>
+
+<pre>
+<code>Date       | Ranbyus DGA        | Mirai Base   | Mirai DGA
+
+2016-12-04 | vmdefmnsndojtu.tw  | vmdefmnsndoj | vmdefmnsndoj.tech
+2016-12-05 | xpknpxmywqsrce.net | xpknpxmywqsr | xpknpxmywqsr.support
+2016-12-06 | lvfjcwwobycjik.com | lvfjcwwobycj | -
+2016-12-07 | nympompksmfxsf.pw  | nympompksmfx | -
+2016-12-08 | kedbuffigfjsfq.in  | kedbuffigfjs | kedbuffigfjs.online
+2016-12-09 | pjapobyvmsnesx.me  | pjapobyvmsne | pjapobyvmsne.support
+2016-12-10 | gjnhvqeopqkjjf.cc  | gjnhvqeopqkj | -
+2016-12-11 | lokwpdhjqhcvtn.su  | lokwpdhjqhcv | -
+2016-12-12 | frwhojupdcrcat.tw  | frwhojupdcrc | -
+2016-12-13 | hufuhuerwgsigx.net | hufuhuerwgsi | -
+2016-12-14 | bwhrdaumwuvnrb.com | bwhrdaumwuvn | bwhrdaumwuvn.support
+2016-12-15 | daldkougomttqb.pw  | daldkougomtt | -
+2016-12-16 | gjuyvvwwmbwvdn.in  | gjuyvvwwmbwv | -
+2016-12-17 | lgigrtmnssejtd.me  | lgigrtmnssej | -
+2016-12-18 | vsuuqkqbavvaiu.cc  | vsuuqkqbavva | -
+2016-12-19 | bpmsfckfkrprom.su  | bpmsfckfkrpr | bpmsfckfkrpr.support
+2016-12-20 | oornsduuwjlifv.tw  | oornsduuwjli | oornsduuwjli.tech
+2016-12-21 | qjqubpciajocbs.net | qjqubpciajoc | qjqubpciajoc.tech
+2016-12-22 | exvdaajegjuror.com | exvdaajegjur | exvdaajegjur.support
+2016-12-23 | gsqvwjkbmwadex.pw  | gsqvwjkbmwad | -
+2016-12-24 | poorcetnmjfchv.in  | poorcetnmjfc | poorcetnmjfc.online
+2016-12-25 | ulficqrujekplt.me  | ulficqrujekp | ulficqrujekp.support
+2016-12-26 | ltwehsdfhkegkh.cc  | ltwehsdfhkeg | -
+2016-12-27 | qqnbfqrdjyjkqb.su  | qqnbfqrdjyjk | qqnbfqrdjyjk.support
+2016-12-28 | xtldkfvredxhll.tw  | xtldkfvredxh | -
+2016-12-29 | aojpocslpwsuik.net | aojpocslpwsu | aojpocslpwsu.support
+2016-12-30 | tyxdowioaygktb.com | tyxdowioaygk | -
+2016-12-31 | vtrndmhsgadage.pw  | vtrndmhsgada | vtrndmhsgada.online</code>
+</pre>
+
+<p>You can find a longer list of domains here: <a href="/downloads/MiraiDomains.txt" title="Mirai DGA botnet domains">Mirai DGA botnet domains</a></p>
+
+<p>As described in the <a href="http://blog.netlab.360.com/new-mirai-variant-with-dga/" title="Now Mirai Has DGA Feature Built in">above blog post</a>, the DGA is not always applied. A wrapping code checks if the current date is in November or start of December (1st to 3rd); on these days the DGA is turned off, on all other days turned on. But the programmers forgot to consider the year in their code: it will turn off the DGA again in November 2017 for another month. So this DGA selection code is a bit buggy. Maybe the programmers don’t plan to use the DGA for such a long time – for sure there will be other samples out until then. </p>
+
+<p>Please note that our interpretation of the TLD selection algorithm differs from the one described in the blog post: the code ends in three separate if statements, not in one combined if-elif-elif construct. It actually checks whether the residual value is divisible by 2, 3, or 4. However, there are cases where neither matches, e.g., 0xef2f25d5 representing December 12th, and no valid domain is produced by the algorithm. This bug is not too critical though: at some later day, a valid domain will be generated anyway.</p>
+
+<p>Also interesting is the distribution of the 3 TLDs support, tech, online and the days where no TLD can be generated. Theoretically one would expect 25% “online”, 25% “support”, 16.6% “tech”, and 33.3% unassigned days. But, as pointed out in the comments of the blog post, the relevant residual value can only take one of 31 values (because only the day of the month and initial seed determine it), and so it is not so surprising that the distribution is unusual. Consequently, the TLD pattern is repeating for every month.</p>
+

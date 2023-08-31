@@ -1,0 +1,24 @@
+<div class="col-sm-4 col-md-3 drilldown">
+    <a href="#collapseSubNav" data-toggle="collapse" class="collapsed visible-xs" role="tab" aria-selected="false"
+      aria-expanded="false" id="ui-collapse-398">Statistics</a>
+    <div class="drilldown-container" style="width: auto;">
+      <nav class="nav-page-list" role="navigation" id="secondary-navigation" style="margin-left: 0px;">
+        <ul>
+          <!-- the .list-emphasis class is optionnal -->
+          <li class="list-emphasis">
+            <span>Statistics</span>
+            <ul>
+              {{ range (where (where $.context.Site.RegularPages "Section" "statistics") "Params.unlisted" "!=" true ) }}
+              {{ if eq .Title $.highlight }}
+              <li class="active" aria-selected="true"><span>{{.Title}}</span></li>
+              {{ else }}
+              <li><a href="{{.RelPermalink}}">{{.Title}}</a></li>
+              {{ end }}
+              {{ end }}
+            </ul>
+          </li>
+          <br>
+        </ul>
+      </nav>
+    </div>
+  </div>

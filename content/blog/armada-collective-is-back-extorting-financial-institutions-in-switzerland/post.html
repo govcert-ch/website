@@ -1,0 +1,76 @@
+---
+title: "Armada Collective is back, extorting Financial Institutions in Switzerland"
+author: GovCERT.ch
+draft: false
+dateadded: 2016-03-11 10:25:36
+lastmod: 2016-04-27 06:54:59
+date: 2016-03-11 10:30:00
+aliases: 
+  - 19/armada-collective-is-back-extorting-financial-institutions-in-switzerland
+---
+
+<h2>UPDATE 2016-04-27 07:00 UTC</h2>
+<p>A new wave of extortion emails has arrived in different Swiss Onlineshops. We have strong indications, that those extortioner are a copycat of Armada Collective.<br />
+Our recommendations regarding these extortion emails in Switzerland are the same as last year:<br /><a href="https://www.ncsc.admin.ch/ncsc/en/home/cyberbedrohungen/ddos.html">Do not pay the ransom</a></p>
+
+-------------------------------------------
+
+<p>In September 2015, we’ve <a href="http://www.govcert.admin.ch/blog/14/armada-collective-blackmails-swiss-hosting-providers" title="Armada Collective blackmails Swiss Hosting Providers">blogged about</a> a hacker group called <em>Armada Collective</em> that was blackmailing hosting providers in Switzerland ("DDoS for bitcoin"). A few days ago, MELANI / GovCERT.ch started to receive reports from financial institutions in Switzerland that received a blackmail from a group that pretends to be Armada Collective. MELANI / GovCERT.ch is aware that dozens of financial institutions in Switzerland are target of similar extortion attempts. We do not know if these extortion emails originate from the Armada Collective or not. It is possible that these originate from a copycat. However, the emails that have been sent out to financial institutions in Switzerland look very similar to what we have seen in September 2015 being sent to hosting providers in Switzerland.</p>
+
+<code>From: Armada Collective<br />
+Subject: DDOS ATTACK!!!<br />
+Date: Wed, 9 Mar 2016 XX:XX:XX +0000<br />
+<br />
+FORWARD THIS MAIL TO WHOEVER IS IMPORTANT IN YOUR COMPANY AND CAN MAKE DECISION!<br />
+<br />
+We are Armada Collective.<br />
+http://www.govcert.admin.ch/blog/14/armada-collective-blackmails-swiss-hosting-providers<br />
+<br />
+All your servers will be DDoS-ed starting Monday (March 14) if you<br />
+don't pay protection - 25 Bitcoins @<br />
+17j7onEtLgS2pd6qLekKQCteqTrnAFXZVS<br />
+If you don't pay by Monday, attack will start, price to stop will<br />
+increase to 50 BTC and will go up 20 BTC for every day of attack.<br />
+<br />
+This is not a joke.<br />
+Our attacks are extremely powerful - sometimes over 1 Tbps per second.<br />
+So, no cheap protection will help.<br />
+<br />
+Prevent it all with just 25 BTC @ 17j7onEtLgS2pd6qLekKQCteqTrnAFXZVS<br />  
+<br />
+Do not reply, we will not read. Pay and we will know its you. AND YOU<br />
+WILL NEVER AGAIN HEAR FROM US!<br />
+Bitcoin is anonymous, nobody will ever know you cooperated.</code>
+
+<p>These extortion emails usually originate from free email service providers (such as Gmail or Openmail) and are being sent to the <em>info@</em> email address of the targeted financial institution. Unlike the extortion attempts conducted by Armada Collective in September 2015, we are not aware of any "Demo DDoS attacks" against the blackmailed organizations at the time being. Also, the amount of money (or better said, bitcoins) the blackmailed organization should pay to Armada Collective apparently increased from 20 bitcoins to 25 bitcoins (which is currently around CHF 10’525). A further slight difference to earlier campaigns is the parallelism of extortion demands and multiple reuse of the same bitcoin address. This leads to the assumption the attackers hope that someone pays on the first demand and they do not plan to actually DDoS all the potential victims. Nevertheless a few exemplary attacks on some organisation should be expected.</p>
+
+<p>What surprised us is the fact that at least some of the extortion emails contain a link to our previous blog post about Armada Collective on GovCERT.ch. However, not all extortion emails contain this link: Some are simply pointing to <em>http://lmgtfy.com/?q=Armada+Collective</em>
+
+<p>Our recommendations regarding the recent extortions against financial institutions in Switzerland are the same as last year: <a href="https://www.ncsc.admin.ch/ncsc/en/home/cyberbedrohungen/ddos.html" title="Ransom payments finance and strengthen DDoS attack infrastructure">Do not pay the ransom</a></p>
+
+<p>Possible mitigation techniques (these have to be discussed with your ISP and / or upstream provider):</p>
+<ul>
+<li>To mitigate TCP SYN floods and layer 7 based attacks (e.g. HTTP flood), you may want to implement rate limiting based on the source IP address</li>
+<li>Most websites are hosted on servers that are only running a web service. Hence there is no reason to allow any UDP traffic towards your webserver. You may want to consider dropping any UDP traffic towards your webserver at your or your ISPs network edge</li>
+<li>If you are hosting critical infrastructure on the same network than your website, you should consider to move your website to a different network or an anti DDoS provider</li>
+</ul>
+
+<p>MELANI / GovCERT.ch has also published a more detailed set of recommendations to mitigate DDoS attacks. These recommendations are available in German, French, Italian and English.</p>
+
+<p><strong>Massnahmen gegen DDoS Attacken (German):</strong><br />
+<a href="https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-unternehmen/aktuelle-themen/massnahmen-schutz-ddos.html" title="Massnahmen gegen DDoS Attacken">https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-unternehmen/aktuelle-themen/massnahmen-schutz-ddos.html</a></p>
+
+<p><strong>Mesures à prendre contre les attaques DDoS (French):</strong><br />
+<a href="https://www.melani.admin.ch/melani/fr/home/documentation/listes-de-controle-et-instructions/massnahmen-gegen-ddos-attacken.html" title="Mesures à prendre contre les attaques DDoS">https://www.melani.admin.ch/melani/fr/home/documentation/listes-de-controle-et-instructions/massnahmen-gegen-ddos-attacken.html</a></p>
+
+<p><strong>Misure contro attacchi DDoS (Italian):</strong><br />
+<a href="https://www.melani.admin.ch/melani/it/home/dokumentation/liste-di-controllo-e-guide/massnahmen-gegen-ddos-attacken.html" title="Misure contro attacchi DDoS">https://www.melani.admin.ch/melani/it/home/dokumentation/liste-di-controllo-e-guide/massnahmen-gegen-ddos-attacken.html</a></p>
+
+<p><strong>Measures to counter DDoS attacks (English):</strong><br />
+<a href="https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-unternehmen/aktuelle-themen/massnahmen-schutz-ddos.html" title="Measures to counter DDoS attacks">https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-unternehmen/aktuelle-themen/massnahmen-schutz-ddos.html</a></p>
+
+<p>Further reading about Armada Collective:</p>
+<p><strong>Armada Collective blackmails Swiss Hosting Providers:</strong><br />
+<a href="http://www.govcert.admin.ch/blog/14/armada-collective-blackmails-swiss-hosting-providers" title="Armada Collective blackmails Swiss Hosting Providers">http://www.govcert.admin.ch/blog/14/armada-collective-blackmails-swiss-hosting-providers</a></p>
+<p><strong>Update on Armada Collective extort Swiss Hosting Providers:</strong><br />
+<a href="http://www.govcert.admin.ch/blog/15/update-on-armada-collective-extort-swiss-hosting-providers" title="Update on Armada Collective extort Swiss Hosting Providers">http://www.govcert.admin.ch/blog/15/update-on-armada-collective-extort-swiss-hosting-providers</a></p>

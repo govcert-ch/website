@@ -1,0 +1,221 @@
+---
+title: "Severe Ransomware Attacks Against Swiss SMEs"
+author: GovCERT.ch
+draft: false
+dateadded: 2019-05-06 12:48:09
+lastmod: 2019-05-09 10:10:00
+date: 2019-05-09 09:15:00
+aliases: 
+  - 36/severe-ransomware-attacks-against-swiss-smes
+---
+
+<p>As we have seen an ever-increasing number of ransomware cases that show a rather sophisticated modus operandi, we are publishing a warning via <a href="http://web.archive.org/web/20201112015638/https://www.melani.admin.ch/melani/en/home/dokumentation/newsletter/verschluesselungstrojaner-greifen-vermehrt-gezielt-unternehmensn.html">MELANI Newsletter</a> along with this blog post, documenting technical details about the recent ransomware attacks against Swiss small and medium enterprises (SMEs). The goal of this blog post is to give you a better understanding of the various modus operandi of the most common ransomware families we have encountered hitting Swiss targets in the past months. </p>
+
+<h2>General Modus Operandi</h2>
+
+<p>The initial foothold is gained by various methods, depending on the threat actor and the exposure of the victim. Common infection vectors are:</p>
+<ul>
+<li>Internet facing RDP/Citrix servers with weak credentials.</li>
+<li>Malspam campaigns / Pay per install (PPI) on dark net markets.</li>
+<li>Targeted emails ("Spear Phishings").</li>
+<li>Waterholes.</li>
+</ul>
+<br />
+<p>Once the attacker gained access to the victim's network, the attacker analyses the victim’s environment (<em>reconnaissance</em>). From there, the modus operandi varies based on the threat actor: Some attackers, such as LockerGoga, continue the attack whereas in the case of “normal” bot infections, we believe that access to these infected devices is sold in dark net markets. In both cases, the threat actor drops additional malware for lateral movement. During that phase, the attacker also tries to steal credentials and infect more systems to get a more solid foothold on the victims network. Once the attacker infected enough systems and/or gained high privileges (such as <em>windows domain admin</em>), they drop the actual ransomware and encrypt data and/or destroy systems. </p>
+
+<center><img src="assets/ransomware-modus-operandi.png" /></center><br />
+
+<p>A commonly observed pattern is that the threat actors either use worm components to automatically spread in victim's network (e.g. by a exploiting known vulnerabilities in the victim’s operating system and/or to steal credentials in order to increase their privileges. </p>
+
+<p>In the following we are going to show three distinct malware families with their modus operandi.</p>
+
+<h2>Emotet / Trickbot / Ryuk</h2>
+<p>Emotet (also known as <em>Heodo</em>) is being used as an initial dropper. Even though Emotet has been commonly known as a ebanking trojan and information stealer, it has become more a dropper-like malware that is likely being sold on dark web markets on a pay-per-install base. Currently, we see a lot of Emotet activity in Switzerland, commonly being distributed with large malspam campaigns. The initial infection vectors are Office documents or JavaScript files. These are often placed on compromised webservers (which are then spammed out to potential victims) or directly attached to the spam email (email attachment). Sometimes, Emotet uses information stolen from Outlook email boxes to distribute further and to have credible sender addresses and subject lines (<em>email thread hijacking</em>).</p>
+
+
+
+
+<center><img src="assets/emotet-modus-operandi.png" /></center><br />
+
+<p>The current AV detection rate of Emotet is still low, mainly because it has polymorphic elements which reduce the actual coverage of traditional Antivirus products. A trick Emotet uses is a so-called dummy program that is launched upon starting, only after that, the unpacking happens, and the actual malware is loaded. This polymorphism is directly implemented into the distribution mechanism, in a way that downloaded samples seem different binaries at first glance, even if they are downloaded in short succession. In the case of the ransomware attacks, we have observed that the attackers are dropping some Trickbot components. </p>
+
+<p>Trickbot is a very modular malware, consisting of different modules. Most important are the following Trickbot modules that allow the attacker to make a lateral movement:</p>
+<ul>
+<li>SMB worm module of Trickbot (<em>worm.dll</em> or <em>spreader.dll</em>) exploiting <a href="http://reversingminds-blog.logdown.com/posts/7803327-how-different-malware-families-uses-eternalblue-part-1">Eternal Blue</a> (CVE-2017-0143 / MS17-010). This module uses the aforementioned SMB vulnerability to further propagate and to increase privileges to system level.</li>
+<li>RDP credential stealer (<em>pwgrab32.dll</em> Module) of Trickbot.</li>
+<li>Using <em>Empire Powershell</em> backdoor.</li>
+<li>There are other modules of Trickbot that may come in handy to the attacker (e.g. <em>screenlocker.dll</em>, <em>systeminfo.dll</em> or <em>vncsrv.dll</em> whose names are pretty self-explaining).</li>
+</ul>
+<br />
+<p>An experiment performed by <a href="https://unit42.paloaltonetworks.com/unit42-malware-team-malspam-pushing-emotet-trickbot/">Palo Alto</a> in July 2018 showed that Emotet / Trickbot infected a vulnerable windows domain controller within 20min after the initial infection of a client.</p>
+
+<p>Once the threat actor gained enough privileges, they eventually drop Ryuk.  Ryuk is a very capable ransomware that does the following:</p>
+<ul>
+<li>A dropper component to detect the platform it is running on (Ryuk has payload ready for both, 32bit and 64bit platforms). </li>
+<li>The itself ransomware kills various processes of security and backup software that might be running on the victim's machine.</li>
+<li>It injects itself in highly privileged processes (running with <em>NT Authority/SYSTEM</em> privileges). It tries to omit core processes which would stop the ransomware prematurely such as lsass.exe or explorer.exe. </li>
+<li>To encrypt files on the victim's machine, Ryuk uses a hybrid approach with two asymmetric and one symmetric component. There exists a global keypair under control of the attacker. The public key is used to protect the private key of the per-victim keypair. These come preloaded but unique per sample. The actual encryption of the files is done using AES. The symmetric key is protected by encrypting it asymmetrically and is then appended to the encrypted file. </li>
+<li>Normally, the encrypted files have the file extension <strong>.ryk</strong>.</li>
+<li>After successful encryption, a .bat file is used to delete shadow copies (<code>vssadmin.exe delete shadows /all /Quiet</code>). </li>
+<li>Ryuk normally displays a ransom note as a textfile or HTML file containing the amount of money to be paid and the recipient (BTC address). Sometimes there is only a contact email address displayed that the victim should contact for further instructions. </li>
+</ul>
+<br />
+<p>For more information about Ryuk, Checkpoint did a good write-up <a href="https://research.checkpoint.com/ryuk-ransomware-targeted-campaign-break/">here</a>.</p>
+
+<p>We have seen various cases in Switzerland where organisations have been badly hit by this threat and we are aware of even larger damage in <a href="https://www.allianz-fuer-cybersicherheit.de/ACS/DE/_/infos/20190114_Update_BSI_Schadsoftware_Emotet.html">Germany</a>. Please note that there are also variations that have been observed, e.g. different malware being used aside from Ryuk or different or unknown infection vectors.</p>
+
+<h2>LockerGoga</h2>
+
+<p>LockerGoga got (in)famous for its attack against <a href="https://newsweb.oslobors.no/message/472389">Norsk Hydro</a>, Hexion, <a href="https://motherboard.vice.com/en_us/article/8xyj7g/ransomware-forces-two-chemical-companies-to-order-hundreds-of-new-computers">Momentive</a> and others. It is a rather new ransomware that first emerged in the beginning of 2019. </p>
+
+<p>The attackers target services that are exposed to the Internet and are penetrating the network from that point. There is unconfirmed information that the group also used spear phishings as their initial attack vector. Once having a foothold in the organization, they begin to move laterally, either with RDP with the help of stolen credentials or using psexec and manually copying files via SMB. Psexec is especially used for the last step, the execution of batch and powershell scripts as well as the final execution of LockerGoga on as much devices as possible. For the lateral movement and the control of the footholds, the attackers commonly use CobaltStrike, a commercial pentesting/post-exploitation framework. CobaltStrike is well documented by the authors <a href="https://www.cobaltstrike.com/support">here</a>. The attackers are going after the Active Directory in order to gain as much privileges as possible using <a href="https://abuse.io/lockergoga.txt">adfind.exe</a>.</p>
+
+<center><img src="assets/lockergoga-modus-operandi.png" /></center><br />
+
+<p>Upon starting LockerGoga, a parent process is created, that can spawn as much child processes for encryption as needed and possible (until CPU utilization reaches around 90%). For encryption, LockerGoga uses the Crypto++ library. It uses AES as symmetrical algorithm with a keylength of 128 bit in <a href="https://www.nioguard.com/2019/03/analysis-of-lockergoga-ransomware.html">CRT mode</a>, others are claimed to use AES-256. The session key and the initialization vector are appended to each file after having been encrypted with RSA asymmetrically. The necessary public key is hardcoded in the binary. LockerGoga tries to lock out users by setting a new password and doing a logoff. It disables network interfaces as well. LockerGoga binaries are often digitally signed by various CAs such as Sectigo or Alisa Ltd. </p>
+
+<h2>Other Families</h2>
+
+<p>Emotet/Trickbot/Ryuk and LockerGoga are just two examples of current ransomware threat landscape. However, there are a lot more ransomware families that may cause huge damage. As follows a short and certainly not comprehensive list:</p>
+<ul>
+<li>GandCrab: has become infamous due to well-engineered fake job applicant mails that have been sent to HR departments in 2018/2019. It is mainly distributed via malspam campaigns or downloaded by droppers.</li>
+<li><a href="https://www.cyber.nj.gov/threat-profiles/ransomware-variants/bitpaymer">BitPaymer</a>: Is currently active as well. It mainly targets SMEs and has a strong focus on RDP attacks.</li>
+<li>Dharma/CrySys: This family is mostly using RDP for its initial foothold. </li>
+<li><a href="https://www.us-cert.gov/ncas/alerts/AA18-337A">SamSam</a>: This is another ransomware that is often used during targeted or sem-targeted attacks against SMEs. </li>
+<li>Defray777: Another ransomware that we observed being used in attacks against Swiss SMEs.</li>
+</ul>
+
+<h2>Countermeasures</h2>
+
+<p>Apart from the usual countermeasures we have been writing about in the most recent <a href="http://web.archive.org/web/20201112015638/https://www.melani.admin.ch/melani/en/home/dokumentation/newsletter/verschluesselungstrojaner-greifen-vermehrt-gezielt-unternehmensn.html">MELANI Newsletter</a>, there are more things to consider in order to reduce the attack surface. We cannot provide a full coverage of what is possible and what needs to be done but try more to provide you with some hints and thoughts what could be done beyond the obvious things.</p>
+
+<p><em>Notes about Backup and Restore</em></p>
+<p>The most important counter-measure is having a sound backup strategy that is tested and also covers worst-case scenarios. Please consider the following points when implementing or reviewing your current strategy:</p>
+<ul>
+<li><strong>Backups MUST be kept offline</strong>. This is the only way to protect it against a determined threat actor.</li>
+<li>Backups must be regularly tested for their integrity and if they can be recovered. </li>
+<li>You need to have different generations of backups at hand. It may be a good strategy to increase the interval between the various generations the older the backups get. This reduces the amount of storage needed but helps having backups for an extended time-period.</li>
+<li>Critical data should be written on WORMs (Write Once Read Many), e.g. regular dumps of CRM data, source code, product data, etc.). </li>
+<li>Reconsider your Mean time to recovery (MTTR) and your recovery point objective (RPO) especially for widespread ransomware infection. Is the throughput of your backup/recovery system enough to restore all your data within a reasonable time?</li>
+</ul>
+<br />
+<p><em>Network Segmentation</em></p>
+<p>You should consider having a good networking segmentation. Even in times where many people propose de-perimetrisation and moving every protection mechanism to the endpoint, we believe that a good network segmentation and the isolation of critical systems are of great value when an infection happens. It may not prevent the actual infection, but it limits the speed of any worm-like spreading as well as it poses additional obstacles for the attacker. This may eventually lead to its detection, because the likelihood that the attacker makes a mistake during the lateral movement raises with every barrier he has to cross. Good internal intrusion detection systems (IDS)that watch out for unknown traffic and have current signature sets at hand may alert before too much damage occurred. Always segment between office automation and industrial control systems. Do never expose industrial control systems directly to the internet nor to your business network that has internet access. Do not forget that also network devices might be targeted and that these should be kept on a current patch level. </p>
+
+<p><em>Gateway</em></p>
+<p>There are several good measures on the gateway level:</p>
+<ul>
+<li>Block "dangerous" filetypes on the mail gateways as proposed <a href="assets/blocked-filetypes.txt">here</a>.</li>
+<li>You may also want to implement an RPZ (Response policy zone) to block the resolution of known bad domain names. <a href="https://urlhaus.abuse.ch/">URLHaus</a> has very up-to-date information about malicious URLs that may be used in RPZ format, as classical blocking list for proxy servers or ClamAV signature file for spam filtering.</li>
+<li>Use information such as SPF, DKIM and DMARC to score, tag or reject incoming emails. Publish appropriate SPF, DKIM and DMARC records yourself for domain names you own.</li>
+</ul>
+<br />
+<p><em>Remote Access / Internet Facing systems</em></p>
+<p>This is currently one of the main attack vectors and these systems must be carefully protected:</p>
+<ul>
+<li>Limit exposure of RDP/Citrix servers.</li>
+<li><strong>Always use a 2nd Factor for the authentication.</strong></li>
+<li>Restrict access to IPs or at least have some GeoIP blocking in place (especially for SMEs with Swiss focus, most users connect from DSL/Cable lines in Switzerland).</li>
+<li>Closely monitor the logs for unauthorized access.</li>
+<li>Use strong VPN technologies wherever possible (SSL VPN, IPsec or Wireguard) with strong authentication</li>
+<li>Harden, monitor and protect all Internet facing systems. Do never expose management interfaces to the Internet without strong authentication and access control lists.</li>
+</ul>
+<br />
+<p><em>Authentication</em></p>
+<p>Always implement a second factor for any Internet facing system as well as for any privileged accounts. Follow the principle of least privilege when granting access from the outside. The higher the privilege the more important is a good authentication. </p>
+
+<p><em>On endpoints and servers</em></p>
+<p>The protection of the endpoints would be a blogpost of its own, however there are a few things we would like to mention:</p>
+<ul>
+<li>Monitor processes with high read/write operations in a short time span.</li>
+<li>Use sysmon to get a good overview of what is going on.</li>
+<li>Implement <a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/applocker/applocker-overview">Windows AppLocker</a>.</li>
+<li>(Remote) Credential Guard (Win10+)/force the use of Restricted Admins (Win8.1+). Use Powershell Remoting for remote administration (stores no credentials on target).</li>
+<li>Get rid of SMBv1 as soon as possible.</li>
+<li>Think about using either micro-virtualization or virtualized browsers / email clients. </li>
+<li>Use centralized logging.</li>
+<li>Keep all systems on a current patch level, have life cycle management for all components.</li>
+</ul>
+<br />
+<p><em>ActiveDirectory</em></p>
+<p>The active directory (AD) is one of the most important assets, organisations must take care to ensure its integrity. We cannot give a full security recommendation on how to protect your AD but we would like to mention a few important points:</p>
+<ul>
+<li>Monitoring of AD logs for unusual behaviour.</li>
+<li>Use two-factor authentication, especially for high-privileged accounts.</li>
+<li>Isolate workstations used for management.</li>
+<li>Closely guard domain controllers. A domain controller must not be reachable from the Internet or be able to connect to the Internet.</li>
+<li>Avoid the use of LM/NTLM authentication.</li>
+<li>Do regular <a href="https://services.premier.microsoft.com/assess">AD RAPs</a> if you are a premier customer of Microsoft.</li>
+<li>Make use of LAPS (<a href="https://www.microsoft.com/en-us/download/details.aspx?id=46899">Local Administrator Password Solution</a>)</li>
+<li>Domain Protected Users Groups</li>
+</ul>
+<br />
+<p><em>On data storage:</em></p>
+<p>A lot of security can also be achieved when configuring your data storage devices correctly and add additional security there:</p>
+<ul>
+<li>Make baselines about how many files are written/changed during normal operations. Set alerting thresholds if this exceeds a certain limit, especially if one or more devices have unusual high rates.</li>
+<li>An interesting approach is the usage of decoy files on shares. These files can be monitored for changes and if such a file is changed, raise an alert and disconnect the device that has been responsible for this operation.</li>
+<li>Follow the principle of least privilege when it comes to access rights, especially write.</li>
+<li>Use file versioning if available. Prohibit normal users to delete older versions of files.</li>
+</ul>
+<br />
+<p>We have outlined a more comprehensive approach on the architecture level. We are aware of the fact that it is difficult to implement this in a 1:1 way but it may serve as a source of ideas if new storage areas are going to be defined and implemented.</p>
+
+<center><img src="assets/datastorage-replication.png" /></center><br />
+
+<p>If the data storage is distributed over different zones, chances to survive a ransomware attack are greatly increased.</p>
+
+<p>The first storage zone contains the normal data storage that is accessible to the users. This is where normal backups are made and a regular transfer to a second storage zone is made. The second storage zone should contain a delayed copy of the first zone. It is only done after some checks have been successful (Entropy checks to detect encrypted files, watermarks, plausibility based on timestamps and hashes). If any anomaly occurs, the synchronization process is stopped and an alert is raised. Another check is being done between the second storage zone and the backup zone.</p>
+
+<p><em>Database servers</em></p>
+<p>Please be aware of the fact that attackers might also encrypt database servers which can exceed the damage of classical file encryption.</p>
+<ul>
+<li>Have good backup and restore procedures ready for all database systems. </li>
+<li>Increase security of the database servers (ACLs, strong authentication, encrypted connections, general database hardening etc.)</li>
+</ul>
+<br />
+<p><em>During the incident</em></p>
+<p>Being hit by ransomware should be considered in every business continuity planning / disaster recovery. It has both technical and organizational components. Most crucial is to have a plan to resume operations as quickly as possible, even if this means to be able to switch certain processes to an analog mode. It is important as well to have a communication strategy. We always recommend being as transparent as possible as based on our experience, public opinion is favourable if an organization informs openly and informs about current status and actions that are taken. If an incident is well-handled, reputation damage is minimal. It is important to stay calm during the incident, not to overreact and to avoid making mistakes that may render the incident even worse. A few important points to consider:</p>
+<ul>
+<li>Make a copy of the backups and only work on the copies during the restore procedure.</li>
+<li>Check the type of ransomware by submitting an encrypted file to nomoreransom.org. </li>
+<li>Be sure that all infected devices have been isolated. Infected devices should be reinstalled as it is difficult to be sure that every component of a malware has been detected and erased. If this cannot be done, a close monitoring and a containment of such systems is crucial. </li>
+<li>If the AD is breached, restore the AD according to your emergency plans and/or make a <a href="https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/manage/ad-forest-recovery-resetting-the-krbtgt-password">double reset</a> of the TGT (Kerberos Ticket Granting Ticket)</li>
+<li>Ensure that all passwords are changed, do not forget about service accounts. </li>
+<li>Inform your staff about the incident and tell them not to talk to any journalist but to kindly point them to your communication department. </li>
+<li>Inform the public in a transparent way. </li>
+</ul> 
+
+<h2>Indicator Of Compromise (IOCs)</h2>
+
+<p><em>CobaltStrike</em></p>
+<p>We would like to thank <a href="https://twitter.com/swisscom_csirt">Swisscom CSIRT</a> for providing precise and up-to-date CobaltStrike IOCs. </p>
+
+URLs:<br />
+<code>hXXp://dopearos[.]com:443/zDJT<br />
+hXXp://dopearos[.]com:443/submit.php<br />
+hXXp://dopearos[.]com:443/en_US/all.js<br />
+hXXp://dopearos[.]com:443/<br />
+hXXp://dopearos[.]com:443/8WyT</code>
+<br />
+Domains:<br />
+<code>dopearos[.]com</code>
+
+<br /><br />
+<p><em>Emotet/Trickbot</em></p>
+As Emotet is very dynamic, we suggest using Feodo Tracker from abuse.ch as your IOC source:
+<ul>
+<li><a href="https://feodotracker.abuse.ch/" title="Feodo Tracker">Feodo Tracker</a></li>
+</ul>
+<br />
+URLHaus has a very good coverage of malicious Links that are being used to distribute Emotet:
+<ul>
+<li><a href="https://urlhaus.abuse.ch/" title="URLhaus">URLhaus</a></li>
+</ul>
+<br />
+<p><em>LockerGoga:</em></p>
+A good overview of many LockerGoga IOCs can be found here:
+<ul>
+<li><a href="https://abuse.io/lockergoga.txt">LockerGoga IOCs</a></li>
+</ul>
+<br />

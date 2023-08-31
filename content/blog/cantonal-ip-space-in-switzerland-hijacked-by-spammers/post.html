@@ -1,0 +1,27 @@
+---
+title: "Cantonal IP space in Switzerland hijacked by Spammers"
+author: GovCERT.ch
+draft: false
+dateadded: 2015-07-30 11:41:59
+lastmod: 2015-08-13 07:05:37
+date: 2015-08-13 07:05:00
+aliases: 
+  - 11/cantonal-ip-space-in-switzerland-hijacked-by-spammers
+---
+
+<p>In June 2015, GovCERT.ch was informed about Border Gateway Protocol (BGP) IP hijacking of IP space that is owned by a cantonal administration in Switzerland. We received the initial hint from <a href="http://www.spamhaus.org/" title="The Spamhaus Project">The Spamhaus Project</a>, an international non-profit organization that fights spam. MELANI / GovCERT.ch informed the affected canton immediately after being informed by Spamhaus.</p>
+
+<p>During our investigation, we noticed that the IP space has been hijacked at least since January 2015. The hijack was originating from a hosting provider in the United States. GovCERT.ch contacted the responsible hosting provider, asking for additional information regarding the incident. Within a few hours we received a feedback from the hosting provider, stating that the announcement originates from one of their downstream customers and that our request has been forwarded to the customer. Since then, we didn't receive any further response or statement from the hosting provider, nor from the customer that was obviously responsible for the IP hijacking. Fortunately, the hosting provider's upstream provider stopped the announcement after receiving a written statement from the network owner that the announcement has been made without their permission.</p>
+
+<p>So, why should someone hijack an IP allocation owned by a Swiss canton? Of course, there could be several reasons. Since the hijacked IP space is state owned, it might be reasonable to presume that the IP space was hijacked due to a cyber espionage campaign. However, the reason for this hijack is actually much simpler: spammers noticed that the prefix in question has not been announced for quite a while (the prefix has not been in use for several years) and hence decided to announce it by themselves for the one and only purpose: sending out spam emails. If the receiver of spam, originating from this IP range, does a whois lookup on the sending IP address, he will actually conclude that the spam email originates from the Swiss canton.</p>
+
+<p>While hijacking unused IP space for the purpose of sending spam is very straightforward, it is also cheaper for the spammer since he does not need to rent the IP space by himself (and pay for it). Since hijacked IP space is owned by someone else, the spammer may also claim that he is not responsible for the spam originating from dormant IP allocations such as these. Because of this, spammers are able to weaponize thousands of IP addresses (in the described case a /16 - more than 64,000 IP addresses) for sending out spam.</p>
+
+<p>Another issue are the upstream providers. It might sometimes be very hard to reach an appropriate person in a timely manner and convincing them that the IP range he (or better said his downstream customer) announces is hijacked.</p>
+
+<p>If you are a network owner, MELANI / GovCERT.ch recommends you to take the following steps:
+<ul>
+<li>Ensure that your object at your RIR (e.g. RIPE) is up to date and has a valid abuse mailbox that is being monitored</li>
+<li>If you own a prefix that is unannounced, you may want to consider announcing it (even when you don't want to use it yet) to make it more difficult for spammers to hijack it. Alternatively, you may want to consider to return IP blocks that you don't use to your RIR.</li>
+<li>Setup BGP monitoring to get notified immediately in case one of your prefixes gets announced by a foreign network without your permission. There are commercial companies that offer such services, if you are unable to do this yourself.</li>
+</ul>

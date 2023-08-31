@@ -1,0 +1,9 @@
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="GovCERT.ch is the Swiss Government Computer Emergency Response Team" />
+<meta name="keywords" content="GovCERT.ch, NCSC, CERT, Swiss, Blog, Security, GovCERT, national, switzerland, national" />
+<title>{{ .Title }}</title>
+{{- with ($.Scratch.Get "Description") }}
+<meta name="description" content="{{ . }}">
+{{- end }}

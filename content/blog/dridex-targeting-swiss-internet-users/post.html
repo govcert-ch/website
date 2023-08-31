@@ -1,0 +1,120 @@
+---
+title: "Dridex targeting Swiss Internet Users"
+author: GovCERT.ch
+draft: false
+dateadded: 2016-07-08 11:03:44
+lastmod: 2016-07-08 11:59:13
+date: 2016-07-08 12:35:00
+aliases: 
+  - 23/dridex-targeting-swiss-internet-users
+---
+
+<p>In the past weeks, we have seen a rise of malicious Microsoft office documents that are being spammed out to Swiss internet users with the aim to infect them with a malicious software (malware) called Dridex.</p>
+
+<p>Dridex is an ebanking Trojan which is already around for some time now. The attackers are operating various botnets with Dridex infected computers. While most of these botnets do have a strong focus on financial institutions from abroad (such as US or UK), one particular botnet is also targeting financial institutions in Switzerland.</p>
+
+<p>These days, Dridex is being distributed via malicious Microsoft office files, for example Word documents (.docx). The attackers have weaponized these documents with a malicious macro. The purpose of this macro is to download additional code (in this case Dridex) from a compromised website, once the office document is being opened and the macro executed. Unless most of the spam campaigns that are hitting our spam traps these days, the spam campaigns that are distributing Dridex do not originate from a spam botnet, but rather from compromised email accounts. Therefore the attackers manage to bypass many spam filters and hence ensure that the email gets delivered to the recipient.</p>
+
+<p>The Dridex spam campaign we have seen yesterday has been sent from compromised t-online.de email accounts, but also from other email service providers:</p>
+
+<code>Received: from mailout09.t-online.de (mailout09.t-online.de [194.25.134.84])<br />
+(using TLSv1 with cipher AES256-SHA (256/256 bits)) (Client CN<br />
+"mailout00.t-online.de", Issuer "TeleSec ServerPass DE-2" (verified OK)) by<br />
+ X (Y) with ESMTPS id X for <X>; Thu,  7 Jul 2016 X<br />
+Received: from fwd10.aul.t-online.de (fwd10.aul.t-online.de [172.20.26.152])<br />
+	by mailout09.t-online.de (Postfix) with SMTP id X for <X>; Thu,  7 Jul 2016 X<br />
+Received: from [127.0.0.1]  (Z@[5.141.50.9])  by fwd10.t-online.de with TLSv1:DHE-RSA-AES256-SHA encrypted) esmtp id  X; Thu, 7 Jul 2016 X<br />
+Message-ID: <X.X@t-online.de><br />
+Date: Thu, 7 Jul 2016 X<br />
+From: X<br />
+Subject: firstname.lastname ; Aufforderung zur Bezahlung von Rechnung #EU932451 von X</code>
+
+<p>If we can trust the email header, the email has been sent through t-online by a broadband IP address in Russia (5.141.50.9 - OJSC Rostelecom, Russia). The email subject varies:</p>
+
+<code>emailaddress: Offene Rechnung ist verfügbar (# <random number>)<br />
+emailaddress, Offene Faktur ist überfällig (# 17285838)<br />
+emailaddress, Offene Warenrechnung ist überfällig (ID 09608490)<br />
+emailaddress - Aufforderung zur Begleichung von Rechnung #J007631 von XYZ<br />
+emailaddress - Aufforderung zur Begleichung von Ausgangsrechnung #EU985390 von XYZ<br />
+emailaddress : Aufforderung zur Bezahlung von Rechnung #W738296 von XYZ<br />
+emailaddress - info, Die Fälligkeit Ihrer Rechnung 1879590 für XYZ<br />
+emailaddress  partner: Ihre Abrechnung ist überfällig (# 15238847)</code>
+
+<p>The spam email look like this, but may vary:</p>
+
+<center><a href="assets/malspam_dridex.png"><img src="assets/malspam_dridex.png" height="376" width="500" alt="Dridex spam sample"/></a><br /><em>Dridex spam sample (click to enlarge)</em></center>
+
+<p>The attachment name varies and depends on the name of the recipient. Once the malicious office document is opened and the macros executed, Dridex payload will be downloaded from a compromised website.</p>
+
+<p>To prevent becoming a victim of Dridex or other malware that is being distributed via malicious office documents, we recommend the following actions:</p>
+
+<p>For private users:</p>
+<ul>
+<li>Be careful when receiving emails from strangers or suspect invoices via email. In case of doubt, call the sender or contact him via email to verify the purpose of the email.</li>
+<li>Never execute macros in office documents you have received via email, even when the sender asks you to do so. Macros may harm your computer!</li>
+<li>Always keep your Antivirus software up to date. If you use a non-free Antivirus, make sure that your Antivirus is licensed and if not, renew it or switch to a free Antivirus software to receive full protection. Otherwise the virus protection will expire and you will no longer be protected against threats.</li>
+<li>Regularly make a backup of your data. The backup should be stored offline, i.e. on an external medium such as an external hard disk. Thus make sure that the medium where the backup is saved is disconnected from the computer after the backup procedure is complete.</li>
+</ul>
+
+<p>For companies:</p>
+<ul>
+<li>For payments or wire transfer issued via ebanking, make use of collective contracts. By using collective contacts, every wire transfer need to be signed an authenticated by a second ebanking contract / login. Ask your bank about the use of collective ebanking contracts.</li>
+<li>Use a dedicated computer for ebanking (no surfing in the internet , email etc).</li>
+<li>Block the receipt of dangerous email attachments on your email gateway. These include among others:</li>
+<br />
+<code>.js (JavaScript)<br />
+.jar (Java)<br />
+.bat (Batch file)<br />
+.exe (Windows executable)<br />
+.cpl (Control Panel)<br />
+.scr (Screensaver)<br />
+.com (COM file)<br />
+.pif (Program Information File)<br />
+.vbs (Visual Basic Script)<br />
+.ps1 (Windows PowerShell)</code>
+<br />
+<li>Make sure that such dangerous email attachments are also blocked, if they are sent to recipients in your company in archive files such as ZIP, RAR or even in encrypted archive files (e.g. in a password-protected ZIP file).</li>
+<li>In addition, all email attachments containing macros (e.g. Word, Excel or PowerPoint attachments which contain macros) should be blocked on the email gateway as well.</li>
+<li>You can obtain additional protection against malware for your IT infrastructure by using the Windows AppLocker . By using the Windows AppLocker, you can specify which programs can be run on the computers in your company.</li>
+</ul>
+
+<h2>Indicator of Compromise (IOCs)</h2>
+
+<p>Dridex payload delivery URLs (fetched by the malicious documents that are being spammed out):</p>
+<code>http://thereputationco.com/office.bin<br />
+http://shaynarae.com/winword.dat</code>
+
+<p>Dridex payload (malware samples):</p>
+<code>winword.dat (MD5 2eaf243bad4b1c22089e7654524f0e5a)<br />
+office.bin (MD5 66e9ff85c9361127cd4b873d48008c9b)</code>
+
+<p>Initial Dridex botnet C&C nodes (compromised servers):</p>
+<code>70.32.97.158:13443<br />
+51.255.69.127:13443<br />
+23.229.54.99:134436</code>
+
+<p>Additional Dridex botnet C&C nodes (compromised servers) - via Dridex configuration file:</p>
+<code>222.255.121.202:443<br />
+93.174.126.37:8443<br />
+197.96.139.253:443<br />
+129.194.100.206:8443<br />
+80.44.193.206:8443<br />
+129.194.98.250:8443<br />
+178.196.145.13:8443<br />
+129.194.100.246:8443<br />
+81.133.39.123:8443<br />
+46.140.107.250:8443<br />
+94.67.72.1:8443<br />
+129.194.42.189:8443<br />
+73.72.208.195:8443<br />
+195.24.93.41:8443<br />
+101.187.28.8:8443<br />
+68.200.154.229:8443</code>
+
+<p>Dridex redirect / webinject server (compromised server):</p>
+<code>
+https://188.165.206.121:12443/2/<br />
+https://62.76.189.130/get-dbYd81hd83H/<br />
+https://160.193.162.145:41443/imprisonment<br />
+https://160.193.162.145:41443/encourage</code>
+

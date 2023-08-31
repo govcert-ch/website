@@ -1,0 +1,98 @@
+---
+title: "Gozi ISFB - When A Bug Really Is A Feature"
+author: GovCERT.ch
+draft: false
+dateadded: 2016-02-05 12:27:59
+lastmod: 2016-02-05 14:40:20
+date: 2016-02-05 13:00:00
+aliases: 
+  - 18/gozi-isfb-when-a-bug-really-is-a-feature
+---
+
+<p>Gozi ISFB is an eBanking Trojan we already know for quite some time. Just recently, a new wave was launched against financial institutions in Switzerland. Similar to the attack we had already reported in <a href="http://www.govcert.admin.ch/blog/13/swiss-advertising-network-compromised-and-distributing-a-trojan" title="Swiss Advertising network compromised and distributing a Trojan">September 2015</a>, Cybercriminals once again compromised a major advertising network in Switzerland daily visited by a large number of Swiss internet users; they all become potential victims of the Gozi eBanking Trojan.</p>
+
+<h2>The Gozi Domain Generation Algorithm (DGA)</h2>
+
+<p>One of the commonly known features of Gozi is its Domain Generation Algorithm (DGA). DGAs produce a set of more or less harmless looking domain names that the bot tries to connect to as their command and control server (botnet C&C). Gozi usually takes the current time as input parameter, and sometimes includes commonly accessible Internet resources (URLs) that need to remain unchanged over time. This gives the Trojan more stability and resilience against take-down operations conducted by Law Enforcement or Security Researchers. In addition, the use of additional Internet resources helps against internet-less sandbox analyses.</p>
+
+<p>In the case of Gozi, a new set of 20 domain names are generated every 3 months. For this purpose, Gozi reads a commonly available webpage and splits it into words - hereby a "word" is defined as a sequence of letters (A-Z), separated by one or more non-letters. All words are changed into lowercase. Using a pseudo-random number generator seeded by the current time and an initial parameter, a bunch of these words are chosen and concatenated. After adding one of a set of top level domains, one domain name is generated. This is repeated 20 times, which generates 20 botnet C&C domain names</p>
+
+<p>The Gozi DGA is no big secret and has been known for quite some time. The first Gozi variants used the American Declaration of Independence as its source, which is stored on http://constitution.org/usdeclar.txt. Naturally, the Declaration of Independece is not very likely to change, so the Gozi gang could be sure to have a stable input for their algorithm. Occasionally, some Gozi campaigns use different Internet resources (URLs) as source. <em>robots.txt</em> files of different webpages appear to be quite popular, because their contents usually never change. This was also the case in the recent Gozi campaign that hit Switzerland.</p>
+
+<p>As the DGA is known, we just fed the content of this new <em>robots.txt</em> into a Python script to calculate the domains... and were surprised to see that the generated domain names differed from what we saw in our lab bot. Now, of course we could just let the lab bot generate the domain names and use them, but it’s a time consuming process, and we still wanted to know what went wrong - human beings are curious ones after all.</p>
+
+<h2>Hey Gozi guys, you have a bug in your Trojan!</h2>
+
+<p>We first tried to verify if we got the initial seed value right - also something that's adaptable via a basic configuration. Or did they change some constants? Did the timeslot calculation change? But no matter how closely we looked, the code seemed to be the same. The last thing we checked was how the list of words of the webpage was calculated, because it looked so trivial - the following, simple Python script does the job for us:</p>
+
+<code>
+words = ""<br />
+def addWord(w):<br />
+   global words<br />
+   if len(w)<3: return<br />
+   if len(words)>0: words += " "<br />
+   words += w<br />
+word = ""<br />
+for c in urllib2.urlopen(url).read() + " ":<br />
+   c = c.lower()<br />
+   if c>='a' and c<='z':<br />
+      word += c<br />
+      continue<br />
+   addWord(word)<br />
+   word = ""<br />
+</code>
+
+<p>It is not very elegant, but simple. What can go wrong here? We verified if the minimum length of words was changed, but this wasn’t the case. The code was the same as in all the old Gozi samples we had analyzed.</p>
+
+<p>After quite some time we found the problem... While our script worked as intended, the Gozi code had a buffer overflow bug. Buffer overflows are one of the major cause for vulnerabilities and offer malware the opportunity to infect computers. In this case the buffer overflow appears ironically in the  DGA of a malware.</p>
+
+<p>Below you see a hexdump of the original page from the <em>robots.txt</em> the Gozi sample is using (we just show the start):</p>
+
+<center><a href="assets/gozidga_1.png"><img src="assets/gozidga_1.png" height="193" width="500" alt="Original content"/></a><br /><em>Original content (click to enlarge)</em></center>
+
+<p>In a first step, Gozi scans the data character by character, changes everything to lowercase, and replaces any non-letter following a sequence of at least 3 letters by a zero byte. The result looks like this:</p>
+
+<center><a href="assets/gozidga_2.png"><img src="assets/gozidga_2.png" height="207" width="500" alt="Word splitted content"/></a><br /><em>Word splitted content (click to enlarge)</em></center>
+
+<p>In addition, a pointer to every word found this way is stored in an additional buffer, which looks like this (here shown as string pointers) - you can see how the addresses match the ones in the above dump:</p>
+
+<center><a href="assets/gozidga_3.png"><img src="assets/gozidga_3.png" alt="Word list"/></a><br /><em>Word list (click to enlarge)</em></center>
+
+<p>No problem so far. But now the code wants to concatenate all these words placing space characters in between. Usually you would allocate a new data block to receive the final string, but the programmers tried to save some memory and thought - correctly - that this step won’t make the data in the source block longer, but most probably even shorter (in the worst case the size will not change). So they decided to write back into the same data buffer. This will result in a few overlapping strcpy operations, at least at the start, but due to the order of how strcpy copies the character - from first to last - this won’t result in problems. This is actually correct... the strcpy operations will all work - ugly, but not buggy. But the problem occurs in the following strcat, the call that appends a space after each word.</p>
+
+<p>But let’s check step by step... before the first strcpy is called, you see the content of the stack with it’s 2 strcpy arguments on top at the lower right corner:</p>
+
+<center><a href="assets/gozidga_4.png"><img src="assets/gozidga_4.png" height="115" width="500" alt="First string is copied..."/></a><br /><em>First string is copied... (click to enlarge)</em></center>
+
+<p>This is a strcpy of the first "user" word to itself. You see that both, source and destination addresses are identical (00380000). This definitely is an overlapping strcpy. This is not yet the problem. Actually the data won’t change at all.</p>
+
+<p>Now look how the situation presents itself before the subsequent strcat call:</p>
+
+<center><a href="assets/gozidga_5.png"><img src="assets/gozidga_5.png" height="116" width="500" alt="Space is appended"/></a><br /><em>Space is appended (click to enlarge)</em></center>
+
+
+<p>What will happen? The strcat will not only overwrite the zero byte after "user" with a space (which is still ok), but the character after this is additionally overwritten by a zero byte, because in C all strings need to end in a zero byte. And in our case, this is... the first letter of the word "agent". So now we have the following data in memory:</p>
+
+<center><a href="assets/gozidga_6.png"><img src="assets/gozidga_6.png" height="189" width="500" alt="Buffer overflow"/></a><br /><em>Buffer overflow (click to enlarge)</em></center>
+
+<p>We would definitely call this a buffer overflow...</p>
+
+<p>Gozi will then append the second word referenced to by the pointer list – but this is an empty string now – and afterwards, another space is appended. As an effect, the word "agent" is removed out of the word list! No further problems occur later on, because now – re-providing the memory of the "lost" word - there's enough space available for all remaining strcat's, therefore no further overwriting happens. The final data block looks like this:</p>
+
+<center><a href="assets/gozidga_7.png"><img src="assets/gozidga_7.png" height="200" width="500" alt="Final wordlist"/></a><br /><em>Final wordlist (click to enlarge)</em></center>
+
+<p>"agent" is gone. The only relict is a double space after "user". And indeed, after we removed "agent" from our wordlist, the Python script produced the correct domain names.</p>
+
+<p>But why did this not happen in previous cases? If we look at the American Declaration of Independence they originally used, we see that it starts with a lot of nothing (no pun intended) – in the form of a bunch of space characters:</p>
+
+<code>"            Declaration of Independence ..."</code>
+
+<p>These spaces allow the word "declaration" to be moved to the left and a space appended without any overlapping, and with no buffer overflow. Same with another <em>robots.txt</em> we saw in the past, it started with:</p>
+
+<code>"# Officer Barbrady says "Nothing to see here...."</code>
+
+<p>Here we have only 2 leading characters, a hash and a space, but that suffices. The first strcpy of "officer" will be self-overlapping, but nothing bad happens here. A space can be appended safely too, and while the following words are also self-overlapping, there is always at least 2 characters left to use.</p>
+
+<p>The problem can only occur when a text immediately starts with a word, and the next words follow with exactly one non-letter in between. Then this second word will "magically disappear". Interestingly only the second word can be affected, even if all words would only be one-character words.</p>
+
+<p>This observation is (most probably) an unintended buffer overflow that makes the DGA a bit more secure and one of the only buffer overflow that can improve the security of a program.</p>

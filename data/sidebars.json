@@ -1,0 +1,45 @@
+{
+  "internal_links": [{
+      "label": "The National Cyber Security Centre",
+      "link": "https://www.ncsc.admin.ch/ncsc/en/home.html"
+    },
+    {
+      "label": "The General Secretariat",
+      "link": "https://www.efd.admin.ch/efd/en/home/das-efd/organisation/the-general-secretariat.html"
+    },
+    {
+      "label": "Federal Department of Finance FDF",
+      "link": "https://www.efd.admin.ch/efd/en/home.html"
+    },
+    {
+      "label": "GovCERT.ch PGP-Key (preferred)",
+      "link": "./downloads/govcert.pgp"
+    },
+    {
+      "label": "GovCERT.ch PGP-Key (alternative)",
+      "link": "./downloads/govcert_alternative.pgp"
+    },
+    {
+      "label": "GovCERT.ch S/MIME",
+      "link": "./downloads/govcert_2021.crt"
+    },
+    {
+      "label": "RFC 2350",
+      "link": "./downloads/rfc2350.txt"
+    }
+  ],
+  "external_links": [
+    {
+      "label": "Forum of Incident Response and Security Teams FIRST",
+      "link": "https://first.org/members/teams/ncsc-ch"
+    },
+    {
+      "label": "European Government CERTs EGC",
+      "link": "http://www.egc-group.org/"
+    },
+    {
+      "label": "Trusted Introducer",
+      "link": "https://www.trusted-introducer.org/directory/teams/govcertch.html"
+    }
+  ]
+}

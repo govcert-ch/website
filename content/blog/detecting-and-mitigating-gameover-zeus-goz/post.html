@@ -1,0 +1,50 @@
+---
+title: "Detecting And Mitigating GameOver ZeuS (GOZ)"
+author: GovCERT.ch
+draft: false
+dateadded: 2014-06-02 11:29:58
+lastmod: 2014-06-02 15:29:06
+date: 2014-06-02 15:20:00
+aliases: 
+  - 2/detecting-and-mitigating-gameover-zeus-goz
+---
+
+<p>Today, the U.S. Department of Justice (DOJ) and Federal Bureau of Investigation (FBI) announced the takedown of two botnets: GameOver ZeuS (GOZ) and CryptoLocker. Both botnets have been around since quite a while and were also present in Switzerland, infecting computers in order to commit ebanking fraud or to blackmail Swiss citizens. GovCERT.ch has been aware of GameOver ZeuS (which is also known as P2P ZeuS) for years and has already taken measures against this threat together with Swiss Internet service providers since July 2013.</p>
+
+<p>One of the easiest ways to detect the presence of GOZ in your network is by using an Intrusion Detection or Prevention System (IDS/IPS). There are many commercial and non-commercial IDS/IPS products around. Two of the most widely used IDS/IPS are <a href="http://www.snort.org" title="Snort IDS/IPS">Snort</a> and <a href="http://suricata-ids.org/" title="Suricata IDS/IPS">Suricata</a>, which are both open source. Further more Snort/Suricata rules can be easily imported into commercial IDS/IPs products. One of the largest set of Snort/Suricata rules is provided by Emerging Threats (ET), but you can of course write your own rules as well.</p>
+
+<p>ET provides several rules which are aimed to detect GOZ flows in your network stream. If you are already running either Snort or Suricata, or you are planing to do so, you might want to take a look at the following ET rules:</p>
+
+<table>
+<tr><th>Rule ID (sid)</th><th>Description</th></tr>
+<tr><td><a href="http://doc.emergingthreats.net/bin/view/Main/2013739">2013739</a></td><td>ET TROJAN Zeus P2P CnC</td></tr>
+<tr><td><a href="http://doc.emergingthreats.net/bin/view/Main/2018296">2018296</a></td><td>ET TROJAN Zeus GameOver Checkin</td></tr>
+<tr><td><a href="http://doc.emergingthreats.net/bin/view/Main/2018242">2018242</a></td><td>ET TROJAN Possible Zeus GameOver Connectivity Check</td></tr>
+<tr><td><a href="http://doc.emergingthreats.net/bin/view/Main/2018316">2018316</a></td><td>ET CURRENT_EVENTS Zeus GameOver Possible DGA NXDOMAIN Responses</td></tr>
+</table>
+
+<p>Another possibility to detect GOZ botnet C&C traffic is to check the log files of your outgoing firewall. In order to communicate with the botnet operator, GOZ infected computers are using a sophisticated P2P mechanism. An infected computer will communicate with other GOZ infected computers in the internet using TCP and UDP high ports (1024 and higher). Hence if you have a computer in your network that is infected with GOZ, you will likely see a high amount of TCP and UDP drops to different IPs in the internet on high ports on your outgoing firewall.</p>
+
+<p>Once you identified an infected computer, you should re-install the operating system. GOZ usually comes with an additional piece of malware to the victims computer, e.g. with the <a href="http://nakedsecurity.sophos.com/2014/02/27/notorious-gameover-malware-gets-itself-a-kernel-mode-rootkit/" title="Notorious "Gameover" malware gets itself a kernel-mode rootkit">Necerus Rootkit</a>. So even if you scan the affected computer with an up to date anti-virus software, you will never be sure if your anti virus was able to catch everything.</p>
+
+<p>In case that you are not able to re-install the operating system, we have written a malware removal guide for you which is available in different languages:</p>
+
+<p><strong>Instructions for removing malware (English)</strong><br />
+<a href="http://www.melani.admin.ch/malware-removal" title="Instructions for removing malware">http://www.melani.admin.ch/malware-removal</a></p>
+
+<p><strong>Anleitung zur Entfernung von Schadsoftware (English)</strong><br />
+<a href="http://www.melani.admin.ch/schadsoftware-entfernung" title="Anleitung zur Entfernung von Schadsoftware">http://www.melani.admin.ch/schadsoftware-entfernung</a></p>
+
+<p><strong>Instructions relatives à la suppression des maliciels (French)</strong><br />
+<a href="http://www.melani.admin.ch/suppression-des-maliciels" title="Instructions relatives à la suppression des maliciels">http://www.melani.admin.ch/suppression-des-maliciels</a></p>
+
+<p><strong>Guida per l’eliminazione di software nocivi (Italian)</strong><br />
+<a href="http://www.melani.admin.ch/eliminazione-di-malware" title="Guida per l’eliminazione di software nocivi">http://www.melani.admin.ch/eliminazione-di-malware</a></p>
+
+<p>To summarize:</p>
+<ul>
+<li>Ensure that you are using a restrictive outgoing firewall policy (default: <strong>deny all</strong>)</li>
+<li>Use an IDS/IPS or analyse your outgoing firewall log files to identify GOZ infected computers in your network</li>
+<li>Re-install the operating systems of infected computers and/or use a removal tool (see above)</li>
+<li>As a preventive measure, you might want to use a DNS firewall (known as Response Policy Zone - RPZ) to block the DNS resolution of hostile domain names</li>
+</ul>

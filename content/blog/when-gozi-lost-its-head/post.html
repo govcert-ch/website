@@ -1,0 +1,41 @@
+---
+title: "When Gozi Lost its Head"
+author: GovCERT.ch
+draft: false
+dateadded: 2017-04-04 07:17:27
+lastmod: 2017-04-04 08:15:17
+date: 2017-04-04 08:15:00
+aliases: 
+  - 30/when-gozi-lost-its-head
+---
+
+<p>After our automated unpacking procedure recently failed on a Gozi binary (MD5 c1a73ff8fb2836fe47bc095b622c6c50), we were forced to perform a manual analysis - and indeed we found some interesting new features in the first layer of the packer…</p>
+
+<p>An initial challenge – not yet too unusual though – was the waiting loop in the packer near the start:</p>
+
+ <center><a href="assets/gozi_initial_waiting_loop.png"><img src="assets/gozi_initial_waiting_loop.png" alt="IDA debugger in action"/></a><br /><em>Initial waiting loop (click to enlarge)</em></center>
+<br />
+
+<p>The code uses the MMX instruction set and basically increments MM7 (initialized with 0, while MM0 is initialized with 1) until it reaches MM2 (realized by the PXOR), which itself is set to a value set by the RDTSC instruction. This process can be pretty time-consuming, also due to the added junk instructions. To shorten the waiting time, the easiest way is to find and set a breakpoint on the PXOR instruction, e.g. by searching for the sequence “0F EF” in the code segment. There are usually only very few false matches (do not rely on the arguments, so don’t search for “0F EF D7”, as these vary in other samples). When the breakpoint is reached, just copy the value of MM2 over to MM7 (the counter). One could also change the JNZ instruction, but this way we’re sure later checks don’t mess things up.</p>
+
+<p>The code will then perform a set of debugger and anti-RE checks. Most of them are handled well with standard OllyDbg anti-anti-RE plugins. One check though could not be neutralized, and we can study this by setting a breakpoint on GetTickCount. The calling code is in an additionally allocated buffer:</p>
+
+<center><a href="assets/gozi_anti-re_check.png"><img src="assets/gozi_anti-re_check.png" alt="IDA debugger in action"/></a><br /><em>Anti RE-Check (click to enlarge)</em></center>
+<br />
+
+<p>The code sleeps for 2 seconds (0x7d0 = 2000 ms) between two calls to GetTickCount. GetTickCount is often used for debugger detection, mainly to detect tracers, because code usually runs slower in a debugger if tracing is enabled. Anti-debugger checks with two GetTickCount calls are common; they usually assert that the elapsed time is not too large. Most anti-anti-RE plugins in OllyDbg catch these checks by making sure GetTickCount calls always return nearby or even subsequent values, in order to simulate fast running code. But in this case, the opposite detection approach is taken: the code makes sure the elapsed time – found in EAX after the SUB instruction – is <strong>larger</strong> than 1.5 seconds (0x5dc = 1500 ms). In other words, it asserts that at least 1.5 seconds passed. Bummer, the detection would not have been possible without the help of OllyDbg’s anti-anti-RE technique… </p>
+
+<p>Fortunately, once analyzed, it is easy to fix: we just need to adjust the value returned by the second GetTickCount so it is at least 1500 above the first return value, which we find on the stack. Alternatively, toggling the carry flag before the JB works too.</p>
+
+<p>Now we set a breakpoint on VirtualAllocEx and find that a pretty large buffer of 64MB (0x4000000) is allocated, so we keep an eye on it. The next breakpoint we set is GetCommandLineW (and VirtualAllocEx is removed). After reaching it, a look at the previously allocated buffer at an offset of around 0x6000 (you can just search for the string “This program”) reveals:</p>
+
+<center><a href="assets/gozi_hidden_pe-header.png"><img src="assets/gozi_hidden_pe-header.png" alt="Anti PE-header"/></a><br /><em>Anti PE-header (click to enlarge)</em></center>
+<br />
+
+<p>It is a PE file. Well, nearly… something is missing: there is no magic MZ at the start, which should occur in any standard PE file. It was obviously removed, and this was also the main reason our automated extraction process did not work. This is how it is supposed to look like, after manually patching in the MZ:</p>
+
+<center><a href="assets/gozi_final_payload.png"><img src="assets/gozi_final_payload.png" alt="Anti PE-header"/></a><br /><em>Final payload (click to enlarge)</em></center>
+<br />
+
+<p>Those who know Gozi will doubtlessly recognize its typical header towards the bottom of the screenshot. Dumping the data and applying the standard procedure does the job from here on.</p>
+

@@ -1,0 +1,65 @@
+---
+title: "Update on Armada Collective extort Swiss Hosting Providers"
+author: GovCERT.ch
+draft: false
+dateadded: 2015-11-15 13:41:19
+lastmod: 2016-04-29 08:09:53
+date: 2015-11-08 08:35:00
+aliases: 
+  - 15/update-on-armada-collective-extort-swiss-hosting-providers
+---
+
+<h2>UPDATE 2016-04-27</h2>
+<p>A new wave of extortion emails has arrived in different Swiss Onlineshops. We have strong indications, that those extortioner are a copycat of Armada Collective.<br />
+Our recommendations regarding these extortion emails in Switzerland are the same as last year:<br /><a href="https://www.ncsc.admin.ch/ncsc/en/home/cyberbedrohungen/ddos.html">Do not pay the ransom</a></p>
+
+-------------------------------------------
+
+<h2>UPDATE 2015-11-08</h2>
+<p>During the recent days and weeks, various Hosting Providers in Switzerland have been blackmailed by a hacking group that calls themselves Armada Collective. As the Distributed Denial of Service (DDoS) attacks carried out by the Armada Collective have grown in terms of intensity and frequency, we have decided to publish an update to our <a href="http://www.govcert.admin.ch/blog/14/armada-collective-blackmails-swiss-hosting-providers" target="_parent" title="Armada Collective blackmails Swiss Hosting Providers">previous blog post</a> about Armada Collective, providing a short overview on the current situation in Switzerland and some additional information.</p>
+<h2>Technical Modus Operandi</h2>
+<p>
+Most of the hacking groups like the Armada Collective and DD4BC are suspected to use booters/stressers ("DDoS as a service") for their DDoS attacks. Hackers can "rent" DDoS attacks for a specific time period from such service, which often sell their DDoS services under the umbrella of "stress testers". The reason why such DDoS services are using this terminology is simple: They want to avoid being a target of actions from Law Enforcement, claiming that they only provide services to website owners to "test" anti DDoS mechanisms. But in fact, boosters / stressers do not verify if the targeted website is actually owned by the customer who ordered the DDoS attack. Due to this, anyone can order a DDoS attack against any website in the internet, and that just for a couple of dollars. Most of such booters / stressers are either using traditional botnets (infected computers – bots) or vulnerable or misconfigured servers in the internet for their attacks. They usually also provide a very user-friendly interface so that even people without much IT knowledge can use such services without any hassle. In addition, customers of such booter / stresser services have the choice between a vast amount of attack types, starting from traditional HTTP and TCP SYN flood up to more modern attack methods such as DNS amplification attacks.</p>
+<h2>Attack types on the network layer</h2>
+<p>Attacks on the network layer are normally much simpler and can affect any application or system. They target bandwidth or basic system resources which are usually limited. Most common network attacks are:</p>
+<ul>
+<li><em>UDP based reflection/amplification attacks:</em> such as DNS (Port 53), NTP (Port 123), SSDP (Port 1900) or Chargen (Port 19). Due to the fact that UDP is a stateless protocol, it allows an attacker to send UDP packets with forged sender IP addresses to a vulnerable server. The vulnerable server then sends back a response to the spoofed sender IP address. For this purpose, attackers usually use requests (queries) that are small but generate an answer that is much bigger, thus resulting in an amplification.</li>
+<li><em>SSYN floods (Spoofed SYN Floods):</em> When sending SYN packets with a spoofed sender IP address, the victim never gets an ACK (acknowledge) for the spoofed SYN packet. It remains in the table of the victim's system until timeout is reached and consumes system resources.</li>
+<li><em>IP fragmentation attacks:</em> This attack type is based on the fact that IP packets may be fragmented into smaller packets in order to be able to traverse a link that only supports smaller frames. These packets need to be reassembled at the target network, which consumes resources. Various forms of such attacks exists, while they always try to exhaust the victim’s resources by sending packets that cannot be reassembled.</li>
+</ul>
+<h2>Attack types on the Application Layer</h2>
+<p>Attacks on the application layer are more diverse and are targeting a certain protocol or application. It is even possible to create very targeted attacks that exploit a certain weakness in an application, e.g. a search function that, for example, result in SQL queries that consumes much system resources. Some examples are:</p>
+<ul>
+<li><em>Pingback attacks (XML-RPC)</em>: These attacks are abusing a function in many Wordpress installations which allows to inform a website about backlinks to WordPress articles</li>
+<li><em>RUDY (R.U. Dead Yet) attacks:</em> The attacker generate a POST request, abusing a web-form with some information, however they do not finish the POST request correctly. The webserver waits for the end of the data transmission which consumes resources on the server’s side. Many simultaneous requests of this type result in an exhaustion of resources on the web server</li>
+<li><em>Slowloris attacks:</em> This attack type tries to keep the connection to the web server open as long as possible, exhausting the resource of the targeted web server</li>
+<li><em>ARME attacks:</em> This kind of attacks target Apache web servers and try to exhaust its memory so that the system needs to start swapping, which usually slows down the targeted web server.</li>
+</ul>
+<p>From several attacks attributed to Armada Collective, we know that the attackers have used different types of the aforementioned attacks, namely DNS, NTP, SSDP and Chargen amplifications and reflection attacks.</p>
+<h2>Why an organization should never pay a ransom</h2>
+<p>We are aware that some organizations that have been blackmailed by hackers recently paid the ransom. We hereby want to outline that MELANI strongly advises victims not to pay under any circumstances. Even though we understand that being under DDoS attack is a very difficult situation and can threaten the operations of the targeting organisation seriously, paying the ransom is not a good option. It will only confirm that the DDoS extortion model actually works, motivating the attacker to continue his business and blackmailing even more victims. There is no guarantee that, after paying a ransom, the attack will stop. If you once pay for a ransom, other hackers might jump on the same train and will start blackmailing you as well (since they know that you are vulnerable to this kind of attack / extortion). Paying such groups fuels their business and gives the attackers even more financial possibilities. As the intensity and duration of DDoS attacks depends on how much money the attacker is willing to pay to the stresser/booter operator, paying the ransom to the attacker leads to bigger and longer attacks that are very cost-intensive to mitigate. Such attacks may then also hurt large ISPs and critical infrastructures.</p>
+<p>Today, MELANI has also released a newsletter that highlights these facts more in-depth.</p>
+<p><strong>Ransom payments finance and strengthen DDoS attack infrastructure:</strong><br />
+<a href="https://www.ncsc.admin.ch/ncsc/en/home/cyberbedrohungen/ddos.html" title="">https://www.ncsc.admin.ch/ncsc/en/home/cyberbedrohungen/ddos.html</a></p>
+<h2>Mitigation</h2>
+<p>MELANI provides a factsheet with the most important points on mitigation strategies.</p>
+<p><strong>Massnahmen gegen DDoS Attacken (German):</strong><br />
+<a href="https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-unternehmen/aktuelle-themen/massnahmen-schutz-ddos.html" title="Massnahmen gegen DDoS Attacken">https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-unternehmen/aktuelle-themen/massnahmen-schutz-ddos.html</a></p>
+
+<p><strong>Mesures à prendre contre les attaques DDoS (French):</strong><br />
+<a href="https://www.melani.admin.ch/melani/fr/home/documentation/listes-de-controle-et-instructions/massnahmen-gegen-ddos-attacken.html" title="Mesures à prendre contre les attaques DDoS">https://www.melani.admin.ch/melani/fr/home/documentation/listes-de-controle-et-instructions/massnahmen-gegen-ddos-attacken.html</a></p>
+
+<p><strong>Misure contro attacchi DDoS (Italian):</strong><br />
+<a href="https://www.melani.admin.ch/melani/it/home/dokumentation/liste-di-controllo-e-guide/massnahmen-gegen-ddos-attacken.html" title="Misure contro attacchi DDoS">https://www.melani.admin.ch/melani/it/home/dokumentation/liste-di-controllo-e-guide/massnahmen-gegen-ddos-attacken.html</a></p>
+
+<p><strong>Measures to counter DDoS attacks (English):</strong><br />
+<a href="https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-unternehmen/aktuelle-themen/massnahmen-schutz-ddos.html" title="Measures to counter DDoS attacks">https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-unternehmen/aktuelle-themen/massnahmen-schutz-ddos.html</a></p>
+
+<p>Even though DDoS mitigation is, depending on the attack type and intensity, sometimes difficult and time-consuming, we are convinced that DDoS mitigation should be possible as every DDoS attack also consumes resources on the attacker’s side. Therefore, attackers may not be willing to continue such attacks over a longer time period. It is important that any organization is prepared to deal with DDoS attacks and having mitigation and backup strategies ready to in order to show attackers that your organization is not a helpless victim but well prepared and able to defend its systems and network against such attacks.</p>
+<p>If an organization is under attack, we recommend to inform CYCO (Cybercrime Coordination Unit Switzerland) and the Reporting and Analysis Centre for Information Assurance (MELANI) in order to coordinate mitigations and penal prosecution efforts. We are also glad to receive packet dumps (pcaps) of such attacks in order to better understand the various attackers and to develop mitigation strategies. If you receive a blackmail, please send it to CYCO and MELANI as it may contain valuable information.</p>
+
+<p><strong>CYCO (Cybercrime Coordination Unit Switzerland):</strong><br />
+<a href="https://www.cybercrime.admin.ch/kobik/en/home.html" title="CYCO (Cybercrime Coordination Unit Switzerland)">https://www.cybercrime.admin.ch/kobik/en/home.html</a></p>
+
+<p><strong>Reporting and Analysis Centre for Information Assurance (MELANI):</strong><br />
+<a href="https://www.ncsc.admin.ch/ncsc/en/home.html" title=">Reporting and Analysis Centre for Information Assurance (MELANI)">https://www.ncsc.admin.ch/ncsc/en/home.html</a></p>
