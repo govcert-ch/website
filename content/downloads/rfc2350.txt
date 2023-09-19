@@ -1,6 +1,6 @@
 RFC 2350
 
-Version: 1.4
+Version: 1.5
 Author: GovCERT.ch
 
 1. Document Information
@@ -19,6 +19,7 @@ Changes:
 - V1.2: 2019/08 - Removed duplicated index (6)
 - V1.3: 2022/07 - Removed phone numbers (2.4 / 2.11)
 - V1.4: 2022/07 - Fixed name in Disclaimers (7)
+- V1.5: 2023/09 - Use HTTPS for URLs & fix some typos
 
 1.2. Distribution List for Notifications
 
