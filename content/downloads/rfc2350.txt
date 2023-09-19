@@ -29,7 +29,7 @@ Any questions about updates please address to the GovCERT.ch e-mail address (see
 
 1.3. Locations where this Document May Be Found
 
-The current version of this profile is always available on http://www.govcert.ch/downloads/rfc2350.txt
+The current version of this profile is always available on https://www.govcert.ch/downloads/rfc2350.txt
 
 2. Contact Information
 
@@ -66,7 +66,7 @@ Please send incident reports to incidents[at]govcert{dot]ch. Non-incident relate
 2.8. Public Keys and Encryption Information
 
 PGP/GnuPG is supported for secure communication.
-The current GovCERT.ch team-key can be found on http://www.govcert.ch/downloads/govcert_alternative.pgp
+The current GovCERT.ch team-key can be found on https://www.govcert.ch/downloads/govcert_alternative.pgp
 Encrypted communications with GovCERT.ch should use this operational key.
 
 2.9 Team Members
@@ -76,7 +76,7 @@ For operational security, no information is provided about the GovCERT.ch team m
 2.10 Other information
 
 For more information about GovCERT.ch or its parent organisation, please have a look at the following websites:
-http://www.govcert.ch/
+https://www.govcert.ch/
 https://www.ncsc.admin.ch/
 
 2.11 Points of customer contact
