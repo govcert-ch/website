@@ -1,6 +1,6 @@
 RFC 2350
 
-Version: 1.4
+Version: 1.5
 Author: GovCERT.ch
 
 1. Document Information
@@ -19,6 +19,7 @@ Changes:
 - V1.2: 2019/08 - Removed duplicated index (6)
 - V1.3: 2022/07 - Removed phone numbers (2.4 / 2.11)
 - V1.4: 2022/07 - Fixed name in Disclaimers (7)
+- V1.5: 2023/09 - Use HTTPS for URLs & fix some typos
 
 1.2. Distribution List for Notifications
 
@@ -29,7 +30,7 @@ Any questions about updates please address to the GovCERT.ch e-mail address (see
 
 1.3. Locations where this Document May Be Found
 
-The current version of this profile is always available on http://www.govcert.ch/downloads/rfc2350.txt
+The current version of this profile is always available on https://www.govcert.ch/downloads/rfc2350.txt
 
 2. Contact Information
 
@@ -61,12 +62,12 @@ Not available.
 
 2.7. Electronic Mail Address
 
-Please send incident reports to incidents[at]govcert{dot]ch. Non-incident related inquiries should be addressed to outreach[at]govcert{dot}ch
+Please send incident reports to incidents[at]govcert{dot}ch. Non-incident related inquiries should be addressed to outreach[at]govcert{dot}ch
 
 2.8. Public Keys and Encryption Information
 
 PGP/GnuPG is supported for secure communication.
-The current GovCERT.ch team-key can be found on http://www.govcert.ch/downloads/govcert_alternative.pgp
+The current GovCERT.ch team-key can be found on https://www.govcert.ch/downloads/govcert_alternative.pgp
 Encrypted communications with GovCERT.ch should use this operational key.
 
 2.9 Team Members
@@ -76,7 +77,7 @@ For operational security, no information is provided about the GovCERT.ch team m
 2.10 Other information
 
 For more information about GovCERT.ch or its parent organisation, please have a look at the following websites:
-http://www.govcert.ch/
+https://www.govcert.ch/
 https://www.ncsc.admin.ch/
 
 2.11 Points of customer contact
@@ -117,13 +118,13 @@ reaching further than that.
 5.1 Incident response
 -
 
-5.2 Proactive Activites
+5.2 Proactive Activities
 -
 
-5.3 Security Quality Management Activites
+5.3 Security Quality Management Activities
 -
 
-5.4 Reactive Activites
+5.4 Reactive Activities
 -
 
 6. Incident reporting Forms
