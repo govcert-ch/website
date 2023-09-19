@@ -61,7 +61,7 @@ Not available.
 
 2.7. Electronic Mail Address
 
-Please send incident reports to incidents[at]govcert{dot]ch. Non-incident related inquiries should be addressed to outreach[at]govcert{dot}ch
+Please send incident reports to incidents[at]govcert{dot}ch. Non-incident related inquiries should be addressed to outreach[at]govcert{dot}ch
 
 2.8. Public Keys and Encryption Information
 
@@ -117,13 +117,13 @@ reaching further than that.
 5.1 Incident response
 -
 
-5.2 Proactive Activites
+5.2 Proactive Activities
 -
 
-5.3 Security Quality Management Activites
+5.3 Security Quality Management Activities
 -
 
-5.4 Reactive Activites
+5.4 Reactive Activities
 -
 
 6. Incident reporting Forms
